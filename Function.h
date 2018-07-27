@@ -5,7 +5,7 @@
 using namespace std;
 struct TrieNode
 {
-	TrieNode *children[36];
+	TrieNode *children[38];
 
 	// isEndOfWord is true if the node represents
 	// end of a word
@@ -15,7 +15,8 @@ struct TrieNode
 struct News
 {
 	string filename;
-	News *root;
+	string para[100];
+	TrieNode *root;
 };
 TrieNode *getNode(void);
 void createNews(News a[100]);
@@ -26,6 +27,6 @@ bool isStop(TrieNode *sroot,string s);
 TrieNode stopwords(TrieNode *sroot);
 void filterword(string &s);
 bool isSub(string s1, string s2);
-void input(TrieNode *root);
+void input(TrieNode *root, string para[], string filename);
 bool checkEnd(string s);
 #endif // !_FUNCTION_H_
