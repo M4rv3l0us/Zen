@@ -28,5 +28,4 @@ TrieNode stopwords(TrieNode *sroot);
 void filterword(string &s);
 bool isSub(string s1, string s2);
 void input(TrieNode *root, string para[], string filename);
-bool checkEnd(string s);
 #endif // !_FUNCTION_H_

@@ -1,16 +1,16 @@
 #include "Function.h"
 
 void createNews(News a[100]) {
-	string newsName = "Group22News", s;
+	string newsName = "Group22News", s; 
 	for (int i = 0; i <= 99; i++)
 	{
-		std::string s = std::to_string(i + 1);
+		std::string s = std::to_string(i + 1); //convert number into string
 		if (i < 10) s = "0" + s;
 		s += ".txt";
-		newsName += s;
+		newsName += s; // create News' name, e.g Group22News01.txt
 		a[i].filename = newsName;
-		a[i].root = getNode();
-		input(a[i].root, a[i].para, newsName);
+		a[i].root = getNode(); // create new node
+		input(a[i].root, a[i].para, newsName); //input root, para and name of a News into database
 	}
 }
 void insert(struct TrieNode *root, string key) //insert word into Trie
@@ -21,11 +21,15 @@ void insert(struct TrieNode *root, string key) //insert word into Trie
 	{
 		if (key[i] > 60 && key[i] < 123)
 		{
-			index = key[i] - 'a';
+			index = key[i] - 'a'; //index of alphabet: a->z = 0->25
 		}
+		else if (key[i] == 35)
+			index = 26;           //index of hastag #
+		else if (key[i] == 36)
+			index = 27;			  //index of dollar sign $
 		else if (key[i] > 47 && key[i] < 58)
-			index = key[i] - '0';
-
+			index = key[i] - '0' + 27;  //index of number 0->9
+		// The TrieNode looks like: a b c d e f g h j k l m n o p q r s t u v w x y z # $ 0 1 2 3 4 5 6 7 8 9 
 		if (!pCrawl->children[index])
 			pCrawl->children[index] = getNode();
 
@@ -33,10 +37,10 @@ void insert(struct TrieNode *root, string key) //insert word into Trie
 	}
 
 	// mark last node as leaf
-	if (pCrawl->isEndOfWord == true) pCrawl->count++;
+	if (pCrawl->isEndOfWord == true) pCrawl->count++; // count the end of words (not yet completed)
 	pCrawl->isEndOfWord = true;
 }
-bool search(struct TrieNode *root, string key)
+bool search(struct TrieNode *root, string key) //search TrieNode
 {
 	struct TrieNode *pCrawl = root;
 	int index;
@@ -57,7 +61,7 @@ bool search(struct TrieNode *root, string key)
 
 	return (pCrawl != NULL && pCrawl->isEndOfWord);
 }
-TrieNode stopwords(TrieNode *sroot)
+TrieNode stopwords(TrieNode *sroot) //stopwords filter
 {
 	ifstream fin;
 	fin.open("stopwords.txt");
@@ -72,12 +76,12 @@ TrieNode stopwords(TrieNode *sroot)
 	fin.close();
 	return *sroot;
 }
-bool isStop(TrieNode *sroot, string s)
+bool isStop(TrieNode *sroot, string s) //check stopwords
 {
 	if (search(sroot, s)) return true;
 	return false;
 }
-void filterword(string &s)
+void filterword(string &s) //filter bullshit characters such as " +-*/ and tolower word
 {
 	for (int i = 0; i < s.length(); i++)
 	{
@@ -102,11 +106,6 @@ bool isSub(string s1, string s2)
 	}
 	else return false;
 } //check string 
-bool checkEnd(string s)
-{
-	if (isSub(s, "\n\n")) return true;
-	return false;
-}// check end of paragrap.h //check end of paragraph
 void input(TrieNode *root, string para[], string filename) //Nhap tat ca words trong 1 News vao 1 Trie
 {
 	ifstream fin;
@@ -119,20 +118,20 @@ void input(TrieNode *root, string para[], string filename) //Nhap tat ca words t
 	while (fin.good()) {
 		k = 0;
 		getline(fin, s, '\n');
-		para[j] = s;
+		para[j] = s; //store the paragraph
 		j++;
-		filterword(s);
+		filterword(s); //filter words
 		while(k!=-1)
-		{
-			k = s.find(' ');
-			stuff = s.substr(i, k);
-			i = 0;
+		{	
+			k = s.find(' '); // find the location of ' '
+			stuff = s.substr(i, k); //copy the substring from start to location of ' '
+			i = 0; //reset i
 			if (k != -1)
 			{
-				s.erase(s.begin(), s.begin() + k + 1);
+				s.erase(s.begin(), s.begin() + k + 1); // delete the string from start to location of ' '+1
 			}
-			if (!isStop(sroot, stuff)) insert(root, stuff);
-			stuff.clear();
+			if (!isStop(sroot, stuff)) insert(root, stuff); // checkstop and insert
+			stuff.clear(); // clear stuff
 		}
 	}
 	fin.close();
