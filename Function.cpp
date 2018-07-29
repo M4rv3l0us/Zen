@@ -31,6 +31,7 @@ void insert(struct TrieNode *root, string key) //insert word into Trie
 			index = key[i] - '0' + 27;  //index of number 0->9
 		// The TrieNode looks like: a b c d e f g h j k l m n o p q r s t u v w x y z # $ 0 1 2 3 4 5 6 7 8 9 
 		if (!pCrawl->children[index])
+
 			pCrawl->children[index] = getNode();
 
 		pCrawl = pCrawl->children[index];
@@ -43,15 +44,19 @@ void insert(struct TrieNode *root, string key) //insert word into Trie
 bool search(struct TrieNode *root, string key) //search TrieNode
 {
 	struct TrieNode *pCrawl = root;
-	int index;
+	int index=0;
 	for (int i = 0; i < key.length(); i++)
 	{
 		if (key[i] > 60 && key[i] < 123)
 		{
-			index = key[i] - 'a';
+			index = key[i] - 'a'; //index of alphabet: a->z = 0->25
 		}
+		else if (key[i] == 35)
+			index = 26;           //index of hastag #
+		else if (key[i] == 36)
+			index = 27;			  //index of dollar sign $
 		else if (key[i] > 47 && key[i] < 58)
-			index = key[i] - '0';
+			index = key[i] - '0' + 27;  //index of number 0->9
 
 		if (!pCrawl->children[index])
 			return false;
@@ -85,7 +90,7 @@ void filterword(string &s) //filter bullshit characters such as " +-*/ and tolow
 {
 	for (int i = 0; i < s.length(); i++)
 	{
-		if ((s[i] < 48 && s[i] > 32 )|| (s[i] > 57 && s[i] < 65) || (s[i] > 90 && s[i] < 97) || s[i] >122 || s[i] == -106)
+		if ((s[i] < 35 && s[i] > 32) || s[i] > 36 && s[i] <48 || (s[i] > 57 && s[i] < 65) || (s[i] > 90 && s[i] < 97) || s[i] > 122 || s[i] == -106)
 		{
 			s.erase(s.begin() + i);
 			i--;
@@ -122,7 +127,7 @@ void input(TrieNode *root, string para[], string filename) //Nhap tat ca words t
 		j++;
 		filterword(s); //filter words
 		while(k!=-1)
-		{	
+		{	//After losing homeless
 			k = s.find(' '); // find the location of ' '
 			stuff = s.substr(i, k); //copy the substring from start to location of ' '
 			i = 0; //reset i
