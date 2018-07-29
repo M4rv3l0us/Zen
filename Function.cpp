@@ -1,16 +1,18 @@
 #include "Function.h"
 
+//DATABASE
 void createNews(News a[100]) {
 	string newsName = "Group22News", s; 
 	for (int i = 0; i <= 99; i++)
 	{
 		std::string s = std::to_string(i + 1); //convert number into string
-		if (i < 10) s = "0" + s;
+		if (i <= 8) s = "0" + s;
 		s += ".txt";
 		newsName += s; // create News' name, e.g Group22News01.txt
 		a[i].filename = newsName;
 		a[i].root = getNode(); // create new node
 		input(a[i].root, a[i].para, newsName); //input root, para and name of a News into database
+		newsName = "Group22News";
 	}
 }
 void insert(struct TrieNode *root, string key) //insert word into Trie
@@ -90,7 +92,7 @@ void filterword(string &s) //filter bullshit characters such as " +-*/ and tolow
 {
 	for (int i = 0; i < s.length(); i++)
 	{
-		if ((s[i] < 35 && s[i] > 32) || s[i] > 36 && s[i] <48 || (s[i] > 57 && s[i] < 65) || (s[i] > 90 && s[i] < 97) || s[i] > 122 || s[i] == -106)
+		if ((s[i] < 35 && s[i] > 32) || s[i] > 36 && s[i] <48 || (s[i] > 57 && s[i] < 65) || (s[i] > 90 && s[i] < 97) || s[i] > 122 || s[i] < 0)
 		{
 			s.erase(s.begin() + i);
 			i--;
@@ -123,6 +125,8 @@ void input(TrieNode *root, string para[], string filename) //Nhap tat ca words t
 	while (fin.good()) {
 		k = 0;
 		getline(fin, s, '\n');
+		while (s.empty())
+			getline(fin, s, '\n');
 		para[j] = s; //store the paragraph
 		j++;
 		filterword(s); //filter words
@@ -135,7 +139,8 @@ void input(TrieNode *root, string para[], string filename) //Nhap tat ca words t
 			{
 				s.erase(s.begin(), s.begin() + k + 1); // delete the string from start to location of ' '+1
 			}
-			if (!isStop(sroot, stuff)) insert(root, stuff); // checkstop and insert
+			if (!isStop(sroot, stuff) && stuff != " ")
+				insert(root, stuff); // checkstop and insert
 			stuff.clear(); // clear stuff
 		}
 	}
@@ -151,4 +156,28 @@ TrieNode *getNode(void)
 		pNode->children[i] = NULL;
 
 	return pNode;
+}
+//SEARCHING
+bool isinTrie(TrieNode *root, string key)
+{
+	if (search(root, key)) return true;
+	return false;
+}
+void searchInfile(News a[], string key)
+{
+	for (int i = 0; i < 99; i++)
+	{
+		if (isinTrie(a[i].root, key))
+			cout << a[i].filename << endl;
+	}
+}
+void searchPara(News a[], string key)
+{
+	int b[100];
+	for (int j = 0; j < 99; j++)
+	{
+		b[j] = 0;
+	}
+	int i = 0, j = 0;
+
 }

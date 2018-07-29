@@ -40,7 +40,6 @@ LendEdu, an online marketplace for student loan refinancing, looked at consumer 
 
 The analysis found that consumers filed 42,097 complaints against 49 financial institutions that are included in the S&P Banks Select Industry Index. An additional thirteen banks in the index had no CFPB complaints filed about any banking product.
 
-
 "The most common complaint categories in order were: mortgages, debt collection, credit reporting, credit card, and bank accounts or service," according to LendEdu research analyst Mike Brown.
 
 The analysis ranked the 49 banks by the number of complaints per billions of dollars in deposits.

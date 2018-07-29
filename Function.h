@@ -28,4 +28,8 @@ TrieNode stopwords(TrieNode *sroot);
 void filterword(string &s);
 bool isSub(string s1, string s2);
 void input(TrieNode *root, string para[], string filename);
+//SEARCHING
+bool isinTrie(TrieNode *root, string key);
+void searchPara(News a[], string key);
+void searchInfile(News a[], string key);
 #endif // !_FUNCTION_H_
