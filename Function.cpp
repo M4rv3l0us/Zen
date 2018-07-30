@@ -232,17 +232,23 @@ void searchInfile(News a[], string key)
 			cout << a[i].filename << endl;
 			cout << "Times: " << pcur->count << endl;
 			cout << "Loc: " << pcur->loc[0]+1 << "," << pcur->loc[1] << endl;
+			cout << a[i].para[pcur->loc[0]] << endl;
 		}
 
 	}
 }
 void searchPara(News a[], string key)
 {
-	int b[100];
-	for (int j = 0; j < 99; j++)
+	bool checkintree = false;
+	TrieNode *pcur = getNode();
+	for (int i = 0; i < 99; i++)
 	{
-		b[j] = 0;
+		search(a[i].root, key, checkintree, pcur);
+		if (checkintree == true && pcur->isEndOfWord)
+		{
+			cout << a[i].filename << endl;
+			cout << "Times: " << pcur->count << endl;
+			cout << a[i].para[pcur->loc[0]];
+		}
 	}
-	int i = 0, j = 0;
-
 }
