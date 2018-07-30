@@ -7,7 +7,7 @@ int main()
 	// Construct trie
 	News b[100];
 	createNews(b);
-
+	//output(b);
 	cout << "Pls enter the word you want to search: " << endl;
 	cin >> a;
 	filterword(a);

@@ -2,7 +2,7 @@
 
 //DATABASE
 void createNews(News a[100]) {
-	string newsName = "Group22News", s; 
+	string newsName = "Group22News", s;
 	for (int i = 0; i <= 99; i++)
 	{
 		std::string s = std::to_string(i + 1); //convert number into string
@@ -15,8 +15,7 @@ void createNews(News a[100]) {
 		newsName = "Group22News";
 	}
 }
-void insert(struct TrieNode *root, string key) //insert word into Trie
-{
+void insert(struct TrieNode *root, string key) {
 	struct TrieNode *pCrawl = root;
 	int index;
 	for (int i = 0; i < key.length(); i++)
@@ -31,7 +30,7 @@ void insert(struct TrieNode *root, string key) //insert word into Trie
 			index = 27;			  //index of dollar sign $
 		else if (key[i] > 47 && key[i] < 58)
 			index = key[i] - '0' + 27;  //index of number 0->9
-		// The TrieNode looks like: a b c d e f g h j k l m n o p q r s t u v w x y z # $ 0 1 2 3 4 5 6 7 8 9 
+										// The TrieNode looks like: a b c d e f g h j k l m n o p q r s t u v w x y z # $ 0 1 2 3 4 5 6 7 8 9 
 		if (!pCrawl->children[index])
 
 			pCrawl->children[index] = getNode();
@@ -43,10 +42,10 @@ void insert(struct TrieNode *root, string key) //insert word into Trie
 	if (pCrawl->isEndOfWord == true) pCrawl->count++; // count the end of words (not yet completed)
 	pCrawl->isEndOfWord = true;
 }
-bool search(struct TrieNode *root, string key) //search TrieNode
+void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur) //search TrieNode
 {
 	struct TrieNode *pCrawl = root;
-	int index=0;
+	int index = 0;
 	for (int i = 0; i < key.length(); i++)
 	{
 		if (key[i] > 60 && key[i] < 123)
@@ -61,12 +60,19 @@ bool search(struct TrieNode *root, string key) //search TrieNode
 			index = key[i] - '0' + 27;  //index of number 0->9
 
 		if (!pCrawl->children[index])
-			return false;
+		{
+			checkintree = false;
+			return;
+		}
 
 		pCrawl = pCrawl->children[index];
 	}
-
-	return (pCrawl != NULL && pCrawl->isEndOfWord);
+	if (pCrawl->isEndOfWord)
+	{
+		checkintree = true;
+		pcur = pCrawl;
+		return;
+	}
 }
 TrieNode stopwords(TrieNode *sroot) //stopwords filter
 {
@@ -85,7 +91,10 @@ TrieNode stopwords(TrieNode *sroot) //stopwords filter
 }
 bool isStop(TrieNode *sroot, string s) //check stopwords
 {
-	if (search(sroot, s)) return true;
+	bool checkintree = false;
+	TrieNode *pcur = getNode();
+	search(sroot, s, checkintree, pcur);
+	if (checkintree) return true;
 	return false;
 }
 void filterword(string &s) //filter bullshit characters such as " +-*/ and tolower word
@@ -120,7 +129,7 @@ void input(TrieNode *root, string para[], string filename) //Nhap tat ca words t
 	string s, stuff;
 	TrieNode *sroot = getNode();
 	*sroot = stopwords(sroot);
-	int i = 0, j = 0;
+	int j = 0;
 	int k = 0;
 	while (fin.good()) {
 		k = 0;
@@ -130,11 +139,10 @@ void input(TrieNode *root, string para[], string filename) //Nhap tat ca words t
 		para[j] = s; //store the paragraph
 		j++;
 		filterword(s); //filter words
-		while(k!=-1)
+		while (k != -1)
 		{	//After losing homeless
 			k = s.find(' '); // find the location of ' '
-			stuff = s.substr(i, k); //copy the substring from start to location of ' '
-			i = 0; //reset i
+			stuff = s.substr(0, k); //copy the substring from start to location of ' '
 			if (k != -1)
 			{
 				s.erase(s.begin(), s.begin() + k + 1); // delete the string from start to location of ' '+1
@@ -157,18 +165,67 @@ TrieNode *getNode(void)
 
 	return pNode;
 }
-//SEARCHING
-bool isinTrie(TrieNode *root, string key)
+//OUTPUT,OPTIMIZE
+bool isLeafNode(struct TrieNode* root)
 {
-	if (search(root, key)) return true;
-	return false;
+	return root->isEndOfWord != false;
 }
+// function to display the content of Trie
+void display(struct TrieNode* root, string str, int level)
+{
+	// If node is leaf node, it indiicates end
+	// of string, so a null charcter is added
+	// and string is displayed
+	ofstream fout;
+	if (isLeafNode(root))
+	{
+		str[level] = '\0';
+		cout << str << endl;
+	}
+
+	int i;
+	for (i = 0; i < 38; i++)
+	{
+		// if NON NULL child is found
+		// add parent key to str and
+		// call the display function recursively
+		// for child node
+		if (root->children[i])
+		{
+			str[level] = i + 'a';
+			display(root->children[i], str, level + 1);
+		}
+	}
+}
+void output(News a[])
+{
+	string str;
+	ofstream fout;
+	string t;
+	for (int i = 0; i <= 99; i++) {
+		std::string s = std::to_string(i + 1);
+		t += s;
+		t += ".txt";
+		fout.open(t);
+		display(a[i].root, str, 0);
+		fout.close();
+		t.empty();
+	}
+}
+//SEARCHING
 void searchInfile(News a[], string key)
 {
+	bool checkintree = false;
+	TrieNode *pcur = getNode();
 	for (int i = 0; i < 99; i++)
 	{
-		if (isinTrie(a[i].root, key))
+		search(a[i].root, key, checkintree, pcur);
+		if (checkintree == true && pcur->isEndOfWord)
+		{
 			cout << a[i].filename << endl;
+			cout << "Times: " << pcur->count << endl;
+		}
+
 	}
 }
 void searchPara(News a[], string key)

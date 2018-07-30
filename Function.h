@@ -10,7 +10,7 @@ struct TrieNode
 	// isEndOfWord is true if the node represents
 	// end of a word
 	bool isEndOfWord;
-	int count = 0;
+	int count = 1;
 };
 struct News
 {
@@ -22,14 +22,17 @@ TrieNode *getNode(void);
 void createNews(News a[100]);
 //TRIENODE
 void insert(struct TrieNode *root, string key);
-bool search(struct TrieNode *root, string key);
-bool isStop(TrieNode *sroot,string s);
+void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur);
+bool isStop(TrieNode *sroot, string s);
 TrieNode stopwords(TrieNode *sroot);
 void filterword(string &s);
 bool isSub(string s1, string s2);
 void input(TrieNode *root, string para[], string filename);
+//OUTPUT,OPTIMIZE
+bool isLeafNode(struct TrieNode* root);
+void display(struct TrieNode* root, string str, int level);
+void output(News a[]);
 //SEARCHING
-bool isinTrie(TrieNode *root, string key);
 void searchPara(News a[], string key);
 void searchInfile(News a[], string key);
 #endif // !_FUNCTION_H_
