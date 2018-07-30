@@ -11,6 +11,8 @@ struct TrieNode
 	// end of a word
 	bool isEndOfWord;
 	int count = 1;
+	int loc[2];
+	// loc[1,2] is para 1, word 2.
 };
 struct News
 {
@@ -21,7 +23,7 @@ struct News
 TrieNode *getNode(void);
 void createNews(News a[100]);
 //TRIENODE
-void insert(struct TrieNode *root, string key);
+void insert(struct TrieNode *root, string key, int loc[]);
 void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur);
 bool isStop(TrieNode *sroot, string s);
 TrieNode stopwords(TrieNode *sroot);

@@ -15,7 +15,7 @@ void createNews(News a[100]) {
 		newsName = "Group22News";
 	}
 }
-void insert(struct TrieNode *root, string key) {
+void insert(struct TrieNode *root, string key, int loc[]) {
 	struct TrieNode *pCrawl = root;
 	int index;
 	for (int i = 0; i < key.length(); i++)
@@ -41,6 +41,8 @@ void insert(struct TrieNode *root, string key) {
 	// mark last node as leaf
 	if (pCrawl->isEndOfWord == true) pCrawl->count++; // count the end of words (not yet completed)
 	pCrawl->isEndOfWord = true;
+	pCrawl->loc[0] = loc[0];
+	pCrawl->loc[1] = loc[1];
 }
 void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur) //search TrieNode
 {
@@ -80,11 +82,12 @@ TrieNode stopwords(TrieNode *sroot) //stopwords filter
 	fin.open("stopwords.txt");
 	sroot = getNode();
 	string a;
+	int loc[2];
 	while (fin.good())
 	{
 		getline(fin, a, '\n');
 		filterword(a);
-		insert(sroot, a);
+		insert(sroot, a,loc);
 	}
 	fin.close();
 	return *sroot;
@@ -129,28 +132,32 @@ void input(TrieNode *root, string para[], string filename) //Nhap tat ca words t
 	string s, stuff;
 	TrieNode *sroot = getNode();
 	*sroot = stopwords(sroot);
-	int j = 0;
-	int k = 0;
+	int j = 0, k = 0;
+	int loc[2];
+	loc[1] = 0;
 	while (fin.good()) {
 		k = 0;
 		getline(fin, s, '\n');
 		while (s.empty())
 			getline(fin, s, '\n');
-		para[j] = s; //store the paragraph
+		para[j] = s;//store the paragraph
+		loc[0] = j;
 		j++;
 		filterword(s); //filter words
 		while (k != -1)
 		{	//After losing homeless
-			k = s.find(' '); // find the location of ' '
+			k = s.find(' ');
+			loc[1]++;// find the location of ' '
 			stuff = s.substr(0, k); //copy the substring from start to location of ' '
 			if (k != -1)
 			{
 				s.erase(s.begin(), s.begin() + k + 1); // delete the string from start to location of ' '+1
 			}
 			if (!isStop(sroot, stuff) && stuff != " ")
-				insert(root, stuff); // checkstop and insert
+				insert(root, stuff,loc); // checkstop and insert
 			stuff.clear(); // clear stuff
 		}
+		loc[1] = 0;
 	}
 	fin.close();
 }
@@ -224,6 +231,7 @@ void searchInfile(News a[], string key)
 		{
 			cout << a[i].filename << endl;
 			cout << "Times: " << pcur->count << endl;
+			cout << "Loc: " << pcur->loc[0]+1 << "," << pcur->loc[1] << endl;
 		}
 
 	}
