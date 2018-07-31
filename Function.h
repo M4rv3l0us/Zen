@@ -10,8 +10,9 @@ struct TrieNode
 	// isEndOfWord is true if the node represents
 	// end of a word
 	bool isEndOfWord;
+	string filename;
 	int count = 1;
-	int loc[2];
+	int loc[50];
 	// loc[1,2] is para 1, word 2.
 };
 struct News
@@ -22,18 +23,21 @@ struct News
 };
 TrieNode *getNode(void);
 void createNews(News a[100]);
+//void newcreateNews(News a[100]);
 //TRIENODE
-void insert(struct TrieNode *root, string key, int loc[]);
+void insert(struct TrieNode *root, string key, int loc, string filename);
+//void newinsert(struct TrieNode *root, string key, string filename, int loc[]);
 void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur);
 bool isStop(TrieNode *sroot, string s);
 TrieNode stopwords(TrieNode *sroot);
 void filterword(string &s);
 bool isSub(string s1, string s2);
 void input(TrieNode *root, string para[], string filename);
+//void inputpara(TrieNode*root, string para[], string filename);
 //OUTPUT,OPTIMIZE
-bool isLeafNode(struct TrieNode* root);
-void display(struct TrieNode* root, string str, int level);
-void output(News a[]);
+//bool isLeafNode(struct TrieNode* root);
+//void display(ofstream &fout, struct TrieNode* root, char word[], int level);
+//void output(News a[]);
 //SEARCHING
 void searchPara(News a[], string key);
 void searchInfile(News a[], string key);
