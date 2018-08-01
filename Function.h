@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _FUNCTION_H_
 #include <iostream>
 #include <string>
@@ -10,7 +11,10 @@ struct TrieNode
 	// isEndOfWord is true if the node represents
 	// end of a word
 	bool isEndOfWord;
-	int count = 0;
+	string filename;
+	int count = 1;
+	int loc[50];
+	// loc[1,2] is para 1, word 2.
 };
 struct News
 {
@@ -20,16 +24,29 @@ struct News
 };
 TrieNode *getNode(void);
 void createNews(News a[100]);
+//void newcreateNews(News a[100]);
 //TRIENODE
-void insert(struct TrieNode *root, string key);
-bool search(struct TrieNode *root, string key);
-bool isStop(TrieNode *sroot,string s);
+void insert(struct TrieNode *root, string key, int loc, string filename);
+//void newinsert(struct TrieNode *root, string key, string filename, int loc[]);
+void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur);
+bool isStop(TrieNode *sroot, string s);
 TrieNode stopwords(TrieNode *sroot);
 void filterword(string &s);
 bool isSub(string s1, string s2);
 void input(TrieNode *root, string para[], string filename);
+//void inputpara(TrieNode*root, string para[], string filename);
+//OUTPUT,OPTIMIZE
+//bool isLeafNode(struct TrieNode* root);
+//void display(ofstream &fout, struct TrieNode* root, char word[], int level);
+//void output(News a[]);
 //SEARCHING
-bool isinTrie(TrieNode *root, string key);
 void searchPara(News a[], string key);
 void searchInfile(News a[], string key);
+void AND(string searchword, News a[]);
+void OR(string searchword, News a[]);
+void placeholder(string searchword, News a[]);
+void intitle(string searchword, News a[]);
+void exactmatch(string searchword, News a[]);
+
+
 #endif // !_FUNCTION_H_
