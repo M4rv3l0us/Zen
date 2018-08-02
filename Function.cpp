@@ -1,7 +1,23 @@
 #include "Function.h"
 
 //DATABASE
+int findex(int level)
+{
+	int index = 0;
+	if (level > 60 && level < 123)
+	{
+		index = level - 'a'; //index of alphabet: a->z = 0->25
+	}
+	else if (level == 35)
+		index = 26;           //index of hastag #
+	else if (level == 36)
+		index = 27;			  //index of dollar sign $
+	else if (level > 47 && level < 58)
+		index = level - '0' + 28;  //index of number 0->9
+	return index;
+}
 void createNews(News a[100]) {
+	clock_t begin = clock();
 	string newsName = "Group22News", s;
 	for (int i = 0; i <= 99; i++)
 	{
@@ -14,62 +30,55 @@ void createNews(News a[100]) {
 		input(a[i].root, a[i].para, newsName); //input root, para and name of a News into database
 		newsName = "Group22News";
 	}
+	clock_t end = clock();
+	cout << "Time run: " << (float)(end - begin) / CLOCKS_PER_SEC << " s" << endl;
 }
 /*void newcreateNews(News a[100]) {
-	string s, orifilename = "Group22News";
-	ifstream fin;
-	fin.open("newtrie.txt");
-	string stuff;
-	string time, filename;
-	while (fin.good()) {
-		for (int i = 0; i <= 99; i++)
-		{
-			std::string s = std::to_string(i + 1); //convert number into string
-			if (i <= 8) s = "0" + s;
-			s += ".txt";
-			orifilename += s; // create News' name, e.g Group22News01.txt
-			a[i].filename = orifilename;
-			a[i].root = getNode(); // create new node
-			inputpara(a[i].root, a[i].para, orifilename);
-			while (fin.good())
-			{
-				int loc[50] = { 0 };
-				getline(fin, s, ',');
-				if (s == "isendoftrie") break;
-				getline(fin, filename, ',');
-				getline(fin, time, ',');
-				int t_dec = stoi(time, 0, 10);
-				int j = 0;
-				for (; j<t_dec - 1; j++)
-				{
-					getline(fin, stuff, ',');
-					int i_dec = stoi(stuff, 0, 10);
-					loc[j] = i_dec;
-				}
-				getline(fin, stuff, '\n');
-				int i_dec = stoi(stuff, 0, 10);
-				loc[j] = i_dec;
-				newinsert(a[i].root, s, orifilename, loc);
-			}
-			orifilename = "Group22News";
-		}
-	}
+string s, orifilename = "Group22News";
+ifstream fin;
+fin.open("newtrie.txt");
+string stuff;
+string time, filename;
+while (fin.good()) {
+for (int i = 0; i <= 99; i++)
+{
+std::string s = std::to_string(i + 1); //convert number into string
+if (i <= 8) s = "0" + s;
+s += ".txt";
+orifilename += s; // create News' name, e.g Group22News01.txt
+a[i].filename = orifilename;
+a[i].root = getNode(); // create new node
+inputpara(a[i].root, a[i].para, orifilename);
+while (fin.good())
+{
+int loc[50] = { 0 };
+getline(fin, s, ',');
+if (s == "isendoftrie") break;
+getline(fin, filename, ',');
+getline(fin, time, ',');
+int t_dec = stoi(time, 0, 10);
+int j = 0;
+for (; j<t_dec - 1; j++)
+{
+getline(fin, stuff, ',');
+int i_dec = stoi(stuff, 0, 10);
+loc[j] = i_dec;
+}
+getline(fin, stuff, '\n');
+int i_dec = stoi(stuff, 0, 10);
+loc[j] = i_dec;
+newinsert(a[i].root, s, orifilename, loc);
+}
+orifilename = "Group22News";
+}
+}
 }*/
 void insert(struct TrieNode *root, string key, int loc, string filename) {
 	struct TrieNode *pCrawl = root;
-	int index;
+	int index =0;
 	for (int i = 0; i < key.length(); i++)
 	{
-		if (key[i] > 60 && key[i] < 123)
-		{
-			index = key[i] - 'a'; //index of alphabet: a->z = 0->25
-		}
-		else if (key[i] == 35)
-			index = 26;           //index of hastag #
-		else if (key[i] == 36)
-			index = 27;			  //index of dollar sign $
-		else if (key[i] > 47 && key[i] < 58)
-			index = key[i] - '0' + 28;  //index of number 0->9
+		index = findex(key[i]);
 										// The TrieNode looks like: a b c d e f g h j k l m n o p q r s t u v w x y z # $ 0 1 2 3 4 5 6 7 8 9 
 		if (!pCrawl->children[index])
 
@@ -93,51 +102,42 @@ void insert(struct TrieNode *root, string key, int loc, string filename) {
 	}
 }
 /*void newinsert(struct TrieNode *root, string key, string filename, int loc[]) {
-	struct TrieNode *pCrawl = root;
-	int index;
-	for (int i = 0; i < key.length(); i++)
-	{
-		if (key[i] > 60 && key[i] < 123)
-		{
-			index = key[i] - 'a'; //index of alphabet: a->z = 0->25
-		}
-		else if (key[i] == 35)
-			index = 26;           //index of hastag #
-		else if (key[i] == 36)
-			index = 27;			  //index of dollar sign $
-		else if (key[i] > 47 && key[i] < 58)
-			index = key[i] - '0' + 28;  //index of number 0->9
-										// The TrieNode looks like: a b c d e f g h j k l m n o p q r s t u v w x y z # $ 0 1 2 3 4 5 6 7 8 9 
-		if (!pCrawl->children[index])
+struct TrieNode *pCrawl = root;
+int index;
+for (int i = 0; i < key.length(); i++)
+{
+if (key[i] > 60 && key[i] < 123)
+{
+index = key[i] - 'a'; //index of alphabet: a->z = 0->25
+}
+else if (key[i] == 35)
+index = 26;           //index of hastag #
+else if (key[i] == 36)
+index = 27;			  //index of dollar sign $
+else if (key[i] > 47 && key[i] < 58)
+index = key[i] - '0' + 28;  //index of number 0->9
+// The TrieNode looks like: a b c d e f g h j k l m n o p q r s t u v w x y z # $ 0 1 2 3 4 5 6 7 8 9
+if (!pCrawl->children[index])
 
-			pCrawl->children[index] = getNode();
+pCrawl->children[index] = getNode();
 
-		pCrawl = pCrawl->children[index];
-	}
+pCrawl = pCrawl->children[index];
+}
 
-	// mark last node as leaf
-	if (pCrawl->isEndOfWord == true) pCrawl->count++; // count the end of words (not yet completed)
-	pCrawl->isEndOfWord = true;
-	pCrawl->filename = filename;
-	for (int i = 0; i < pCrawl->count; i++)
-		pCrawl->loc[i] = loc[i];
+// mark last node as leaf
+if (pCrawl->isEndOfWord == true) pCrawl->count++; // count the end of words (not yet completed)
+pCrawl->isEndOfWord = true;
+pCrawl->filename = filename;
+for (int i = 0; i < pCrawl->count; i++)
+pCrawl->loc[i] = loc[i];
 }*/
 void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur) //search TrieNode
 {
 	struct TrieNode *pCrawl = root;
 	int index = 0;
 	for (int i = 0; i < key.length(); i++)
-	{
-		if (key[i] > 60 && key[i] < 123)
-		{
-			index = key[i] - 'a'; //index of alphabet: a->z = 0->25
-		}
-		else if (key[i] == 35)
-			index = 26;           //index of hastag #
-		else if (key[i] == 36)
-			index = 27;			  //index of dollar sign $
-		else if (key[i] > 47 && key[i] < 58)
-			index = key[i] - '0' + 28;  //index of number 0->9
+	{	
+		index = findex(key[i]);
 
 		if (!pCrawl->children[index])
 		{
@@ -164,7 +164,7 @@ TrieNode stopwords(TrieNode *sroot) //stopwords filter
 	{
 		getline(fin, a, '\n');
 		filterword(a);
-		insert(sroot, a, 0,"trie.txt");
+		insert(sroot, a, 0, "trie.txt");
 	}
 	fin.close();
 	return *sroot;
@@ -181,7 +181,7 @@ void filterword(string &s) //filter bullshit characters such as " +-*/ and tolow
 {
 	for (int i = 0; i < s.length(); i++)
 	{
-		if ((s[i] < 35 && s[i] > 32) || s[i] > 36 && s[i] <48 || (s[i] > 57 && s[i] < 65) || (s[i] > 90 && s[i] < 97) || s[i] > 122 || s[i] < 0)
+		if ((s[i] < 35 && s[i] > 32) || s[i] > 36 && s[i] <42 || 42<s[i] && s[i]<48 || (s[i] > 57 && s[i] < 65) || (s[i] > 90 && s[i] < 97) || s[i] > 122 || s[i] < 0)
 		{
 			s.erase(s.begin() + i);
 			i--;
@@ -230,25 +230,25 @@ void input(TrieNode *root, string para[], string filename) //Nhap tat ca words t
 				s.erase(s.begin(), s.begin() + k + 1); // delete the string from start to location of ' '+1
 			}
 			if (stuff != " ")
-				insert(root, stuff, loc,filename); // checkstop and insert
+				insert(root, stuff, loc, filename); // checkstop and insert
 			stuff.clear(); // clear stuff
 		}
 	}
 	fin.close();
 }
 /*void inputpara(TrieNode*root, string para[], string filename) {
-	ifstream fin;
-	fin.open(filename);
-	int i = 0;
-	string s;
-	while (fin.good()) {
-		getline(fin, s, '\n');
-		while (s.empty())
-		getline(fin, s, '\n');
-		para[i] = s;//store the paragraph
-		i++;
-	}
-	fin.close();
+ifstream fin;
+fin.open(filename);
+int i = 0;
+string s;
+while (fin.good()) {
+getline(fin, s, '\n');
+while (s.empty())
+getline(fin, s, '\n');
+para[i] = s;//store the paragraph
+i++;
+}
+fin.close();
 }*/
 TrieNode *getNode(void)
 {
@@ -264,64 +264,166 @@ TrieNode *getNode(void)
 	return pNode;
 }
 //OUTPUT,OPTIMIZE
-/*bool isLeafNode(struct TrieNode* root)
+bool isLeafNode(struct TrieNode* root)
 {
-	return root->isEndOfWord != false;
+return root->isEndOfWord != false;
 }
 // function to display the content of Trie
 void display(ofstream &fout, struct TrieNode* root, char word[], int level)
 {
-	if (isLeafNode(root))
+if (isLeafNode(root))
+{
+word[level] = '\0';
+fout << word << "," << root->filename << "," << root->count;
+for (int j = 0; j < root->count; j++)
+{
+if (root->loc[j] != 0)
+fout << "," << root->loc[j];
+}
+fout << endl;
+}
+int i;
+for (i = 0; i < 38; i++)
+{
+// if NON NULL child is found
+// add parent key to str and
+// call the display function recursively
+// for child node
+if (root->children[i])
+{
+if (i < 26)
+{
+word[level] = i + 'a'; //index of alphabet: a->z = 0->25
+}
+else if (i == 26)
+word[level] = '#';//index of hastag #
+else if (i == 27)
+word[level] = '$';		  //index of dollar sign $
+else if (i > 27 && i < 38)
+word[level] = i - 28 + '0';  //index of number 0->9
+display(fout, root->children[i], word, level + 1);
+}
+}
+}
+void output(TrieNode *hroot)
+{
+ofstream fout;
+fout.open("historyTrie.txt");
+string t;
+char word[20];
+int level = 0;
+hroot->isEndOfWord = false;
+display(fout, hroot, word, level);
+fout.close();
+}
+//HISTORY
+bool isLastNode(struct TrieNode* root)
+{
+	for (int i = 0; i < 38; i++)
+		if (root->children[i])
+			return 0;
+	return 1;
+}
+// Recursive function to print auto-suggestions for given
+// node.
+void suggestionsRec(struct TrieNode* root, string currPrefix)
+{
+	// found a string in Trie with the given prefix
+	if (root->isEndOfWord)
 	{
-		word[level] = '\0';
-		fout << word << "," << root->filename << "," << root->count;
-		for (int j = 0; j < root->count; j++)
-		{
-			if (root->loc[j] != 0)
-				fout << "," << root->loc[j];
-		}
-		fout << endl;
+		cout << currPrefix;
+		cout << endl;
 	}
-	int i;
-	for (i = 0; i < 38; i++)
+
+	// All children struct node pointers are NULL
+	if (isLastNode(root))
+		return;
+
+	for (int i = 0; i < 38; i++)
 	{
-		// if NON NULL child is found
-		// add parent key to str and
-		// call the display function recursively
-		// for child node
 		if (root->children[i])
 		{
-			if (i < 26)
-			{
-				word[level] = i + 'a'; //index of alphabet: a->z = 0->25
-			}
-			else if (i == 26)
-				word[level] = '#';//index of hastag #
-			else if (i == 27)
-				word[level] = '$';		  //index of dollar sign $
-			else if (i > 27 && i < 38)
-				word[level] = i - 28 + '0';  //index of number 0->9
-			display(fout, root->children[i], word, level + 1);
+			// append current character to currPrefix string
+			currPrefix.push_back(97 + i);
+
+			// recur over the rest
+			suggestionsRec(root->children[i], currPrefix);
+			currPrefix.pop_back();
 		}
 	}
 }
-void output(News a[])
+// print suggestions for given query prefix.
+int printAutoSuggestions(TrieNode* root, const string query)
+{
+	struct TrieNode* pCrawl = root;
+
+	// Check if prefix is present and find the
+	// the node (of last level) with last character
+	// of given string.
+	int level;
+	int n = query.length();
+	for (level = 0; level < n; level++)
+	{
+		int index = findex(query[level]);
+
+		// no string in the Trie has this prefix
+		if (!pCrawl->children[index])
+			return 0;
+
+		pCrawl = pCrawl->children[index];
+	}
+
+	// If prefix is present as a word.
+	bool isWord = (pCrawl->isEndOfWord == true);
+
+	// If prefix is last node of tree (has no
+	// children)
+	bool isLast = isLastNode(pCrawl);
+
+	// If prefix is present as a word, but
+	// there is no subtree below the last
+	// matching node.
+	if (isWord && isLast)
+	{
+		cout << query << endl;
+		return -1;
+	}
+
+	// If there are are nodes below last
+	// matching character.
+	if (!isLast)
+	{
+		string prefix = query;
+		suggestionsRec(pCrawl, prefix);
+		return 1;
+	}
+}
+void updatehistoryTrie(TrieNode *hroot, string a)
 {
 	ofstream fout;
-	fout.open("trie.txt");
-	string t;
-	char word[20];
-	int level = 0;
-	for (int i = 0; i <= 99; i++)
+	inputhistoryTrie(hroot);
+	filterword(a);
+	insert(hroot, a, 0, "historyTrie.txt");
+	output(hroot);
+}
+void inputhistoryTrie(TrieNode *hroot)
+{
+	ifstream fin;
+	fin.open("historyTrie.txt");
+	string s, stuff;
+	while (fin.good())
 	{
-		a[i].root->isEndOfWord = false;
-		display(fout, a[i].root, word, level);
+		getline(fin, s, ',');
+		getline(fin, stuff, '\n');
+		insert(hroot, s,0,"historyTrie.txt");
 	}
-	fout.close();
-}*/
-//SEARCHING
+	fin.close();
+}
+//SEARCHING & FEATURE
+
 void searchInfile(News a[], string key)
 {
+	clock_t begin = clock();
 	bool checkintree = false;
 	TrieNode *pcur = getNode();
 	for (int i = 0; i < 99; i++)
@@ -336,23 +438,105 @@ void searchInfile(News a[], string key)
 				if (pcur->loc[j] != 0)
 					cout << pcur->loc[j] << ",";
 			cout << endl;
-			cout << a[i].para[pcur->loc[0]] << endl;
+			//xoa(pcur->loc, pcur->count);
+			cout << "In para: " << endl;
+			for (int j = 0; j < pcur->count; j++)
+				if (pcur->loc[j] != 0)
+					cout << a[i].para[pcur->loc[j]] << endl << endl;
 		}
 
 	}
+	clock_t end = clock();
+	cout << "Time run: " << (float)(end - begin) / CLOCKS_PER_SEC << " s" << endl;
 }
-void searchPara(News a[], string key)
+void AND(string searchword, News a[])
 {
-	bool checkintree = false;
-	TrieNode *pcur = getNode();
+	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
+	bool a1 = false, a2 = false;
+	string s1, s2;
+	if (searchword.find('AND') == -1)
+	{
+		return;
+	}
+	else
+	{
+		s1 = searchword.substr(0, searchword.find('AND') - 3);
+		s2 = searchword.substr(searchword.find('AND') + 2);
+	}
+	filterword(s1);
+	filterword(s2);
 	for (int i = 0; i < 99; i++)
 	{
-		search(a[i].root, key, checkintree, pcur);
-		if (checkintree == true && pcur->isEndOfWord)
+		search(a[i].root, s1, a1, pcur1);
+		search(a[i].root, s2, a2, pcur2);
+		if (a1 == true && pcur1->isEndOfWord && a2 == true && pcur2->isEndOfWord)
 		{
 			cout << a[i].filename << endl;
-			cout << "Times: " << pcur->count << endl;
-			cout << a[i].para[pcur->loc[0]];
+
+		}
+	}
+}
+void OR(string searchword, News a[])
+{
+	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
+	bool a1 = false, a2 = false;
+	string s1, s2;
+	if (searchword.find('OR') == -1)
+	{
+		return;
+	}
+	else
+	{
+		s1 = searchword.substr(0, searchword.find('OR') - 2);
+		s2 = searchword.substr(searchword.find('OR') + 1);
+	}
+	for (int i = 0; i < 99; i++)
+	{
+		search(a[i].root, s1, a1, pcur1);
+		search(a[i].root, s2, a2, pcur2);
+		if ((a1 == true && pcur1->isEndOfWord) || (a2 == true && pcur2->isEndOfWord))
+		{
+			cout << a[i].filename << endl;
+
+		}
+	}
+}
+void placeholder(string searchword, News a[])
+{
+	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
+	bool a1 = false, a2 = false;
+	string s1, s2;
+	ifstream fin;
+	string temp;
+	if (searchword.find('*') == -1)
+	{
+		return;
+	}
+	else
+	{
+		s1 = searchword.substr(0, searchword.find('*') - 1);
+		s2 = searchword.substr(searchword.find('*') + 1);
+	}
+	for (int i = 0; i < 99; i++)
+	{
+		search(a[i].root, s1, a1, pcur1);
+		if (a1 == true && pcur1->isEndOfWord)
+		{
+			fin.open(a[i].filename);
+			getline(fin, temp, ' ');
+			while (temp.compare(s1) != 0)
+			{
+				getline(fin, temp, ' ');
+				if (temp.compare(s1) == 0)
+				{
+					getline(fin, temp, ' ');
+					getline(fin, temp, ' ');
+					if (temp.compare(s2) == 0)
+					{
+						cout << a[i].filename << endl;
+					}
+				}
+			}
 		}
 	}
 }

@@ -1,0 +1,3 @@
+a,historyTrie.txt,2
+apple,historyTrie.txt,1
+sing,historyTrie.txt,1

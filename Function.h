@@ -1,7 +1,9 @@
+#pragma once
 #ifndef _FUNCTION_H_
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <ctime>
 using namespace std;
 struct TrieNode
 {
@@ -13,7 +15,7 @@ struct TrieNode
 	string filename;
 	int count = 1;
 	int loc[50];
-	// loc[1,2] is para 1, word 2.
+	// loc={1,2,3} para 1, para 2, para 3
 };
 struct News
 {
@@ -35,10 +37,24 @@ bool isSub(string s1, string s2);
 void input(TrieNode *root, string para[], string filename);
 //void inputpara(TrieNode*root, string para[], string filename);
 //OUTPUT,OPTIMIZE
-//bool isLeafNode(struct TrieNode* root);
-//void display(ofstream &fout, struct TrieNode* root, char word[], int level);
-//void output(News a[]);
+bool isLeafNode(struct TrieNode* root);
+void display(ofstream &fout, struct TrieNode* root, char word[], int level);
+void output(TrieNode *hroot);
+//-------------------------------HISTORY---------------------------------
+int findex(int level);
+bool isLastNode(struct TrieNode* root);
+void suggestionsRec(struct TrieNode* root, string currPrefix);
+int printAutoSuggestions(TrieNode* root, const string query);
+void updatehistoryTrie(TrieNode *hroot, string a);
+void inputhistoryTrie(TrieNode *hroot);
 //SEARCHING
-void searchPara(News a[], string key);
+void xoa(int a[], int&n);
 void searchInfile(News a[], string key);
+void AND(string searchword, News a[]);
+void OR(string searchword, News a[]);
+void placeholder(string searchword, News a[]);
+void intitle(string searchword, News a[]);
+void exactmatch(string searchword, News a[]);
+
+
 #endif // !_FUNCTION_H_
