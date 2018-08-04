@@ -19,8 +19,8 @@ int main()
 	}*/
 	updatehistoryTrie(hroot, a);
 	SYN(a, n, b);
-	if (a.find(" ") == -1)
-		rankingone(b, n, a);
+	SINGLE(a, n, b);
+	MINUS(a, n, b);
 	placeholder(a,n, b);
 	WHOLE(a,n, b);
 	AND(a,n, b);

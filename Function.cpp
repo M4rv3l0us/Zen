@@ -504,6 +504,11 @@ void printblock(string para, string block[], int numblock)
 	}
 
 }
+void SINGLE(string a, int n, News b[])
+{
+	if (a.find(" ") == -1 && a.find("AND") == -1 && a.find("-") == -1 && a.find("OR") == -1 && a.find("`") == -1 && a.find("*") == -1)
+		rankingone(b, n, a);
+}
 void AND(string searchword,int numfile, News a[])
 {
 	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
@@ -557,6 +562,26 @@ void WHOLE(string searchword, int numfile, News a[])
 	if (s.find(" ") == -1) rankingone(a, numfile,s);
 	else
 	rankingwhole(a,numfile, s);
+}
+void MINUS(string searchword, int numfile, News a[])
+{
+	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
+	string s1, s2;
+	bool a1 = false, a2 = false;
+	int i = searchword.find('-');
+	if (i == -1)
+	{
+		return;
+	}
+	else if (i != -1)
+	{
+		s1 = searchword.substr(0, searchword.find('-'));
+		s2 = searchword.substr(searchword.find('-') + 1);
+		filterword(s1);
+		filterword(s2);
+	}
+	rankingminus(a, numfile, s1, s2);
+	
 }
 void placeholder(string searchword, int numfile, News a[])
 {
@@ -757,13 +782,13 @@ void rankingone(News a[], int numfile, string key)
 		search(a[i].root, key, checkintree, pcur);
 		if (checkintree == true && pcur->isEndOfWord)
 		{
-			rank[i].times = pcur->count;
-			rank[i].filename = i;
-			rank[i].loc = pcur->loc[0];
+			rank[count].times = pcur->count;
+			rank[count].filename = i;
+			rank[count].loc = pcur->loc[0];
 			count++;
 		}
 		else {
-			rank[i].times = 0;
+			rank[count].times = 0;
 			fuck++;
 			}
 	}
@@ -840,14 +865,14 @@ void rankingtwo(News a[], int numfile, string s1, string s2) {
 		}
 		if (a1 == true && pcur1->isEndOfWord && a2 == true && pcur2->isEndOfWord && check == true)
 		{
-			rank[i].times = pcur1->count + pcur2->count;
-			rank[i].filename = i;
-			rank[i].loc = pcur1->loc[m];
+			rank[count].times = pcur1->count + pcur2->count;
+			rank[count].filename = i;
+			rank[count].loc = pcur1->loc[m];
 			count++;
 		
 		}
 		else {
-			rank[i].times = 0;
+			rank[count].times = 0;
 			fuck++;
 		}
 }
@@ -1036,6 +1061,76 @@ void rankingwhole(News a[], int numfile, string s) {
 		k++;
 	}
 }
+//Ranking Minus
+void rankingminus(News a[], int numfile, string s1, string s2) {
+
+	RankSys *rank = new RankSys[numfile];
+	int fuck = 0, count = 0;
+	bool a1 = false, a2 = false;
+	TrieNode *pcur1 = getNode();
+	TrieNode *pcur2 = getNode();
+	for (int i = 0; i < numfile; i++)
+	{
+		int m = 0, n = 0;
+		search(a[i].root, s1, a1, pcur1);
+		search(a[i].root, s2, a2, pcur2);
+		if (a1 == true && pcur1->isEndOfWord && a2 == false && pcur2->isEndOfWord)
+		{
+			rank[count].times = pcur1->count;
+			rank[count].filename = i;
+			rank[count].loc = pcur1->loc[m];
+			count++;
+
+		}
+		else {
+			rank[count].times = 0;
+			fuck++;
+		}
+	}
+	if (fuck == numfile) {
+		cout << "FUCK!";
+		return;
+	}
+	int i, j;
+	bool swapped;
+	for (i = 0; i < count; i++)
+	{
+		swapped = false;
+		for (j = 0; j < count - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
+			}
+		}
+
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
+	}
+	int k = 0;
+	while (rank[k].times != 0 && k<5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[k].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[k].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		printparatwo(a[rank[k].filename].para[rank[k].loc], s1, s2);
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		k++;
+	}
+}
+
+//PRINT
 void printpara(string para, string s) {
 	string stuff, fil;
 	int k = 0;
@@ -1138,6 +1233,7 @@ void SYN(string searchword, int numfile, News a[])
 	{
 		s = searchword.substr(searchword.find('~') + 1);
 	}
+	else return;
 	rankingsyn(a, numfile, s);
 }
 void inputsyntrie(TrieNode *&sroot)
