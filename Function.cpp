@@ -506,12 +506,13 @@ void printblock(string para, string block[], int numblock)
 }
 void SINGLE(string a, int n, News b[])
 {
-	if (a.find(" ") == -1 && a.find("AND") == -1 && a.find("-") == -1 && a.find("OR") == -1 && a.find("`") == -1 && a.find("*") == -1 && a.find("intitle:") != -1)
+	if (!isSub(a," ") && !isSub(a, "AND") && !isSub(a, "-") && !isSub(a, "~")  && !isSub(a, "*") && !isSub(a, "intitle:") != -1)
 	{
 		filterword(a);
 		rankingone(b, n, a);
 	}
 }
+//1. AND
 void AND(string searchword,int numfile, News a[])
 {
 	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
@@ -530,6 +531,7 @@ void AND(string searchword,int numfile, News a[])
 	filterword(s2);
 	rankingtwo(a,numfile, s1, s2);
 }
+//2. OR
 void OR(string searchword, int numfile, News a[])
 {
 	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
@@ -548,6 +550,7 @@ void OR(string searchword, int numfile, News a[])
 	filterword(s2);
 	rankingor(a,numfile, s1, s2);
 }
+//9. Search for an exact match. Put a word or phrase inside quotes. For example, "tallest building".
 void WHOLE(string searchword, int numfile, News a[])
 {
 	TrieNode *pcur = getNode();
@@ -566,6 +569,7 @@ void WHOLE(string searchword, int numfile, News a[])
 	else
 	rankingwhole(a,numfile, s);
 }
+//3. Manchester –united
 void MINUS(string searchword, int numfile, News a[])
 {
 	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
@@ -586,7 +590,8 @@ void MINUS(string searchword, int numfile, News a[])
 	rankingminus(a, numfile, s1, s2);
 	
 }
-void placeholder(string searchword, int numfile, News a[])
+//10. Search for wildcards or unknown words. Put a * in your word or phrase where you want to leave a placeholder.For example, "largest * in the world"
+void PLACEHOLDER(string searchword, int numfile, News a[])
 {
 	RankSys *rank = new RankSys[numfile];
 	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
@@ -697,6 +702,7 @@ void placeholder(string searchword, int numfile, News a[])
 		t++;
 	}
 }
+//4. intitle:hammer nails
 void INTITLE(string searchword,int numfile, News a[])
 {
 	string s;
@@ -730,34 +736,9 @@ int count(string s, char sub)
 //Search one word
 void rankingone(News a[], int numfile, string key)
 {
-	clock_t begin = clock();
 	RankSys *rank = new RankSys[numfile];
 	int count=0;
 	int fuck = 0;
-	/*bool checkintree = false;
-	if (isSub(a, " ")) {
-		int  n = count(a, ' ') + 1;
-		int k = 0, i = 0;
-		string *block = new string[n];
-		TrieNode *pcur[50];
-			while (k != -1)
-			{
-				k = a.find(' ');
-				block[i] = a.substr(0, k); 
-				if (k != -1)
-					a.erase(a.begin(), a.begin() + k + 1);
-				i++;
-			}
-		for (int j = 0; j < n; j++)
-		{
-			search(root, block[j], checkintree, pcur[j]);
-			if (checkintree == false) {
-				for (int l = j; l < n-1; l++)
-					block[j] = block[j + 1];
-					pcur[j] = pcur[j + 1];
-			}//if not in trie
-			n--;
-		}*/
 	bool checkintree = false;
 	TrieNode *pcur = getNode();
 	for (int i = 0; i < numfile; i++)
@@ -776,7 +757,10 @@ void rankingone(News a[], int numfile, string key)
 			}
 	}
 	if (fuck == numfile) {
-		cout << "FUCK!";
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << "No match found!" << endl;
 		return;
 	}
 	int i, j;
@@ -816,8 +800,6 @@ void rankingone(News a[], int numfile, string key)
 		SetConsoleTextAttribute(hConsoleColor, 7);
 		k++;
 	}
-	clock_t end = clock();
-	cout << "Time run: " << (float)(end - begin) / CLOCKS_PER_SEC << " s" << endl;
 } //Search one word
 //Ranking AND
 void rankingtwo(News a[], int numfile, string s1, string s2) {
@@ -860,7 +842,10 @@ void rankingtwo(News a[], int numfile, string s1, string s2) {
 		}
 }
 	if (fuck == numfile) {
-		cout << "FUCK!";
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << "No match found!" << endl;
 		return;
 	}
 	int i, j;
@@ -938,7 +923,10 @@ void rankingor(News a[], int numfile, string s1, string s2)
 		}
 	}
 	if (fuck == numfile) {
-		cout << "FUCK!";
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << "No match found!" << endl;
 		return;
 	}
 	int i, j;
@@ -1002,7 +990,10 @@ void rankingwhole(News a[], int numfile, string s) {
 		l = 1;
 	}
 	if (m == 0) {
-		cout << "FUCK!";
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << "No match found!" << endl;
 		return;
 	}
 
@@ -1071,7 +1062,10 @@ void rankingminus(News a[], int numfile, string s1, string s2) {
 		}
 	}
 	if (fuck == numfile) {
-		cout << "FUCK!";
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << "No match found!" << endl;
 		return;
 	}
 	int i, j;
@@ -1136,7 +1130,10 @@ void rankingtitle(News a[], int numfile, string key)
 		}
 	}
 	if (fuck == numfile) {
-		cout << "FUCK!";
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << "No match found!" << endl;
 		return;
 	}
 	int i, j;
@@ -1270,7 +1267,7 @@ void printparawhole(string para, string s) {
 		fil.clear();
 		stuff.clear();
 }
-//Synonym
+//Synonym //12. Entering “~set” will bring back results that include words like “configure”, “collection” and “change” which are all synonyms of “set
 void SYN(string searchword, int numfile, News a[])
 {
 	TrieNode *pcur = getNode();
@@ -1393,7 +1390,10 @@ void rankingsyn(News a[], int numfile, string s)
 			l = 1;
 		}
 		if (fuck == numfile) {
-			cout << "FUCK!";
+			HANDLE hConsoleColor;
+			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsoleColor, 4);
+			cout << "No match found!" <<endl;
 			return;
 		}
 		int i, j;

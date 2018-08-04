@@ -63,7 +63,7 @@ void AND(string searchword,int numfile, News a[]);
 void OR(string searchword,int numfile, News a[]);
 void WHOLE(string searchword,int numfile, News a[]);
 void MINUS(string searchword, int numfile, News a[]);
-void placeholder(string searchword,int numfile, News a[]);
+void PLACEHOLDER(string searchword,int numfile, News a[]);
 void INTITLE(string searchword, int numfile, News a[]);
 void exactmatch(string searchword, News a[]);
 //-----------------------------------------------ULTIMATE--------------------------------------------
