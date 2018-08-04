@@ -506,9 +506,11 @@ void printblock(string para, string block[], int numblock)
 }
 void SINGLE(string a, int n, News b[])
 {
-	filterword(a);
-	if (a.find(" ") == -1 && a.find("AND") == -1 && a.find("-") == -1 && a.find("OR") == -1 && a.find("`") == -1 && a.find("*") == -1)
+	if (a.find(" ") == -1 && a.find("AND") == -1 && a.find("-") == -1 && a.find("OR") == -1 && a.find("`") == -1 && a.find("*") == -1 && a.find("intitle:") != -1)
+	{
+		filterword(a);
 		rankingone(b, n, a);
+	}
 }
 void AND(string searchword,int numfile, News a[])
 {
@@ -1340,7 +1342,10 @@ void checkinsyntree(TrieNode *&root, string key,bool&check, string *&syn)
 		index = findex(key[i]);
 
 		if (!pCrawl->children[index])
+		{
 			check = false;
+			return;
+		}
 		pCrawl = pCrawl->children[index];
 	}
 	if (pCrawl->isEndOfWord)

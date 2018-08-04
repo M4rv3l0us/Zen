@@ -1,6 +1,7 @@
 a,historyTrie.txt,1
 aaorab,historyTrie.txt,1
 aaorao,historyTrie.txt,1
+after,historyTrie.txt,2
 afteraaafight,historyTrie.txt,1
 afteraaalosing,historyTrie.txt,1
 afteraandak,historyTrie.txt,1
