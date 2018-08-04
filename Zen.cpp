@@ -6,11 +6,24 @@ int main()
 	string a;
 	int query;
 	// Construct trie
-	News b[100];
-	createNews(b);
+	News b[101];
+	int n = 101;
+	createNews(b,n);
 	cout << "Pls enter the word you want to search: " << endl;
 	getline(cin, a);
+	string *block = new string;
+	/*if (isSub(a, " ")) {
+		int n = 0;
+		splitblock(a, block,n);
+		searchblock(b, block, n);
+	}*/
 	updatehistoryTrie(hroot, a);
+	if (a.find(" ") == -1)
+		rankingone(b, n, a);
+	placeholder(a,n, b);
+	WHOLE(a,n, b);
+	AND(a,n, b);
+	OR(a,n, b);
 	cout << "Suggestion:" << endl;
 	int comp = printAutoSuggestions(hroot, a);
 	if (comp == -1)

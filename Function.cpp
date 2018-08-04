@@ -4,7 +4,7 @@
 int findex(int level)
 {
 	int index = 0;
-	if (level > 60 && level < 123)
+	if (level > 96 && level < 123)
 	{
 		index = level - 'a'; //index of alphabet: a->z = 0->25
 	}
@@ -16,10 +16,10 @@ int findex(int level)
 		index = level - '0' + 28;  //index of number 0->9
 	return index;
 }
-void createNews(News a[100]) {
+void createNews(News a[], int numfile) {
 	clock_t begin = clock();
 	string newsName = "Group22News", s;
-	for (int i = 0; i <= 99; i++)
+	for (int i = 0; i < numfile ;i++)
 	{
 		std::string s = std::to_string(i + 1); //convert number into string
 		if (i <= 8) s = "0" + s;
@@ -33,46 +33,6 @@ void createNews(News a[100]) {
 	clock_t end = clock();
 	cout << "Time run: " << (float)(end - begin) / CLOCKS_PER_SEC << " s" << endl;
 }
-/*void newcreateNews(News a[100]) {
-string s, orifilename = "Group22News";
-ifstream fin;
-fin.open("newtrie.txt");
-string stuff;
-string time, filename;
-while (fin.good()) {
-for (int i = 0; i <= 99; i++)
-{
-std::string s = std::to_string(i + 1); //convert number into string
-if (i <= 8) s = "0" + s;
-s += ".txt";
-orifilename += s; // create News' name, e.g Group22News01.txt
-a[i].filename = orifilename;
-a[i].root = getNode(); // create new node
-inputpara(a[i].root, a[i].para, orifilename);
-while (fin.good())
-{
-int loc[50] = { 0 };
-getline(fin, s, ',');
-if (s == "isendoftrie") break;
-getline(fin, filename, ',');
-getline(fin, time, ',');
-int t_dec = stoi(time, 0, 10);
-int j = 0;
-for (; j<t_dec - 1; j++)
-{
-getline(fin, stuff, ',');
-int i_dec = stoi(stuff, 0, 10);
-loc[j] = i_dec;
-}
-getline(fin, stuff, '\n');
-int i_dec = stoi(stuff, 0, 10);
-loc[j] = i_dec;
-newinsert(a[i].root, s, orifilename, loc);
-}
-orifilename = "Group22News";
-}
-}
-}*/
 void insert(struct TrieNode *root, string key, int loc, string filename) {
 	struct TrieNode *pCrawl = root;
 	int index =0;
@@ -101,44 +61,14 @@ void insert(struct TrieNode *root, string key, int loc, string filename) {
 		pCrawl->loc[k] = loc;
 	}
 }
-/*void newinsert(struct TrieNode *root, string key, string filename, int loc[]) {
-struct TrieNode *pCrawl = root;
-int index;
-for (int i = 0; i < key.length(); i++)
-{
-if (key[i] > 60 && key[i] < 123)
-{
-index = key[i] - 'a'; //index of alphabet: a->z = 0->25
-}
-else if (key[i] == 35)
-index = 26;           //index of hastag #
-else if (key[i] == 36)
-index = 27;			  //index of dollar sign $
-else if (key[i] > 47 && key[i] < 58)
-index = key[i] - '0' + 28;  //index of number 0->9
-// The TrieNode looks like: a b c d e f g h j k l m n o p q r s t u v w x y z # $ 0 1 2 3 4 5 6 7 8 9
-if (!pCrawl->children[index])
-
-pCrawl->children[index] = getNode();
-
-pCrawl = pCrawl->children[index];
-}
-
-// mark last node as leaf
-if (pCrawl->isEndOfWord == true) pCrawl->count++; // count the end of words (not yet completed)
-pCrawl->isEndOfWord = true;
-pCrawl->filename = filename;
-for (int i = 0; i < pCrawl->count; i++)
-pCrawl->loc[i] = loc[i];
-}*/
 void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur) //search TrieNode
 {
 	struct TrieNode *pCrawl = root;
-	int index = 0;
+	int index = -1;
 	for (int i = 0; i < key.length(); i++)
 	{	
 		index = findex(key[i]);
-
+	
 		if (!pCrawl->children[index])
 		{
 			checkintree = false;
@@ -153,6 +83,21 @@ void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur) //
 		pcur = pCrawl;
 		return;
 	}
+}
+bool checkintree(TrieNode *&root, string key)
+{
+	struct TrieNode *pCrawl = root;
+	int index = 0;
+	for (int i = 0; i < key.length(); i++)
+	{
+		index = findex(key[i]);
+
+		if (!pCrawl->children[index])
+			return false;
+		pCrawl = pCrawl->children[index];
+	}
+	if (pCrawl->isEndOfWord)
+		return true;
 }
 TrieNode stopwords(TrieNode *sroot) //stopwords filter
 {
@@ -202,7 +147,7 @@ bool isSub(string s1, string s2)
 	}
 	else return false;
 } //check string 
-void input(TrieNode *root, string para[], string filename) //Nhap tat ca words trong 1 News vao 1 Trie
+void input(TrieNode *root, string *para, string filename) //Nhap tat ca words trong 1 News vao 1 Trie
 {
 	ifstream fin;
 	fin.open(filename);
@@ -263,7 +208,11 @@ TrieNode *getNode(void)
 
 	return pNode;
 }
+
+
 //OUTPUT,OPTIMIZE
+
+
 bool isLeafNode(struct TrieNode* root)
 {
 return root->isEndOfWord != false;
@@ -316,7 +265,12 @@ hroot->isEndOfWord = false;
 display(fout, hroot, word, level);
 fout.close();
 }
+
+
 //HISTORY
+
+
+
 bool isLastNode(struct TrieNode* root)
 {
 	for (int i = 0; i < 38; i++)
@@ -419,37 +373,140 @@ void inputhistoryTrie(TrieNode *hroot)
 	}
 	fin.close();
 }
+
+
+
 //SEARCHING & FEATURE
 
-void searchInfile(News a[], string key)
+
+void splitblock(string s, string *&block, int &numblock)
+{
+	bool checkintree = false;
+	if (isSub(s, " ")) {
+		int  n = count(s, ' ') + 1;
+		int k = 0, i = 0;
+		block = new string[n];
+		TrieNode *pcur[50];
+		while (k != -1)
+		{
+			k = s.find(' ');
+			block[i] = s.substr(0, k);
+			filterword(block[i]);
+			if (k != -1)
+				s.erase(s.begin(), s.begin() + k + 1);
+			i++;
+		}
+		numblock = i;
+	}
+}
+void searchblock(News a[], int numfile, string block[], int numblock)
 {
 	clock_t begin = clock();
+	RankSys rank[100];
+	int fuck = 0;
 	bool checkintree = false;
 	TrieNode *pcur = getNode();
-	for (int i = 0; i < 99; i++)
+	int o = 0;
+	for (int i = 0; i < numfile; i++)
 	{
-		search(a[i].root, key, checkintree, pcur);
-		if (checkintree == true && pcur->isEndOfWord)
+		for (int j = 0; j < numblock; j++)
 		{
-			cout << a[i].filename << endl;
-			cout << "Times: " << pcur->count << endl;
-			cout << "Loc: ";
-			for (int j = 0; j < pcur->count; j++)
-				if (pcur->loc[j] != 0)
-					cout << pcur->loc[j] << ",";
-			cout << endl;
-			//xoa(pcur->loc, pcur->count);
-			cout << "In para: " << endl;
-			for (int j = 0; j < pcur->count; j++)
-				if (pcur->loc[j] != 0)
-					cout << a[i].para[pcur->loc[j]] << endl << endl;
+			search(a[i].root, block[j], checkintree, pcur);
+			if (checkintree == true && pcur->isEndOfWord)
+			{
+				rank[o].times = pcur->count;
+				rank[o].filename = i;
+				rank[o].ofpcur = j;
+				rank[o].loc = pcur->loc[0];
+				o++;
+			}
+			else {
+				rank[o].times = 0;
+				fuck++;
+			}
+		}
+	}
+	if (fuck == 100) {
+		cout << "FUCK!";
+		return;
+	}
+	int i, j;
+	bool swapped;
+	for (i = 0; i < 99; i++)
+	{
+		swapped = false;
+		for (j = 0; j < 99 - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
+			}
 		}
 
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
+	}
+	int k = 0;
+	while (rank[k].times != 0 && k<5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[k].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[k].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		printpara(a[rank[k].filename].para[rank[k].loc], block[rank[k].ofpcur]);
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		k++;
 	}
 	clock_t end = clock();
 	cout << "Time run: " << (float)(end - begin) / CLOCKS_PER_SEC << " s" << endl;
 }
-void AND(string searchword, News a[])
+void printblock(string para, string block[], int numblock)
+{
+	string stuff, fil;
+	int k = 0;
+	while (k != -1)
+	{
+		k = para.find(' ');
+		// find the location of ' '
+		stuff = para.substr(0, k); //copy the substring from start to location of ' '
+		fil = stuff;
+		filterword(fil);
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		for (int i = 0; i < numblock; i++)
+		{
+			if (fil == block[i])
+			{
+				HANDLE hConsoleColor;
+				hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+				SetConsoleTextAttribute(hConsoleColor, 4);
+				cout << stuff;
+			}
+			else
+				cout << stuff;
+			if (k != -1)
+			{
+				para.erase(para.begin(), para.begin() + k + 1); // delete the string from start to location of ' '+1
+			}
+			cout << " ";
+			fil.clear();
+		}
+		
+	}
+
+}
+void AND(string searchword,int numfile, News a[])
 {
 	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
 	bool a1 = false, a2 = false;
@@ -465,18 +522,9 @@ void AND(string searchword, News a[])
 	}
 	filterword(s1);
 	filterword(s2);
-	for (int i = 0; i < 99; i++)
-	{
-		search(a[i].root, s1, a1, pcur1);
-		search(a[i].root, s2, a2, pcur2);
-		if (a1 == true && pcur1->isEndOfWord && a2 == true && pcur2->isEndOfWord)
-		{
-			cout << a[i].filename << endl;
-
-		}
-	}
+	rankingtwo(a,numfile, s1, s2);
 }
-void OR(string searchword, News a[])
+void OR(string searchword, int numfile, News a[])
 {
 	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
 	bool a1 = false, a2 = false;
@@ -488,26 +536,39 @@ void OR(string searchword, News a[])
 	else
 	{
 		s1 = searchword.substr(0, searchword.find('OR') - 2);
-		s2 = searchword.substr(searchword.find('OR') + 1);
+		s2 = searchword.substr(searchword.find('OR') +2);
 	}
-	for (int i = 0; i < 99; i++)
-	{
-		search(a[i].root, s1, a1, pcur1);
-		search(a[i].root, s2, a2, pcur2);
-		if ((a1 == true && pcur1->isEndOfWord) || (a2 == true && pcur2->isEndOfWord))
-		{
-			cout << a[i].filename << endl;
-
-		}
-	}
+	filterword(s1);
+	filterword(s2);
+	rankingor(a,numfile, s1, s2);
 }
-void placeholder(string searchword, News a[])
+void WHOLE(string searchword, int numfile, News a[])
 {
+	TrieNode *pcur = getNode();
+	string s;
+	int i = searchword.find('\"');
+	if (i == -1)
+	{
+		return;
+	}
+	else
+	{
+		s = searchword.substr(searchword.find('\"') +1);
+		s.pop_back();
+	}
+	if (s.find(" ") == -1) rankingone(a, numfile,s);
+	else
+	rankingwhole(a,numfile, s);
+}
+void placeholder(string searchword, int numfile, News a[])
+{
+	RankSys *rank = new RankSys[numfile];
 	TrieNode *pcur1 = getNode(), *pcur2 = getNode();
 	bool a1 = false, a2 = false;
-	string s1, s2;
+	string s1, s2, ori, mid, sup;
 	ifstream fin;
-	string temp;
+	string temp, s;
+	int k = 0, m = 0;
 	if (searchword.find('*') == -1)
 	{
 		return;
@@ -515,28 +576,557 @@ void placeholder(string searchword, News a[])
 	else
 	{
 		s1 = searchword.substr(0, searchword.find('*') - 1);
-		s2 = searchword.substr(searchword.find('*') + 1);
+		s2 = searchword.substr(searchword.find('*') + 2);
+
+
 	}
-	for (int i = 0; i < 99; i++)
+	for (int i = 0; i < numfile; i++)
 	{
 		search(a[i].root, s1, a1, pcur1);
 		if (a1 == true && pcur1->isEndOfWord)
 		{
-			fin.open(a[i].filename);
-			getline(fin, temp, ' ');
-			while (temp.compare(s1) != 0)
+			for (int j = 0; j < pcur1->count; j++)
 			{
-				getline(fin, temp, ' ');
-				if (temp.compare(s1) == 0)
+				temp = a[i].para[pcur1->loc[j]];
+				while (k != 999)
 				{
-					getline(fin, temp, ' ');
-					getline(fin, temp, ' ');
-					if (temp.compare(s2) == 0)
-					{
-						cout << a[i].filename << endl;
-					}
+					k = temp.find(s1);
+					if (k == -1) break;
+					if (k == 0) {
+						temp.erase(temp.begin(), temp.begin() + s1.length() + 1);
+						}
+					else 
+						temp.erase(temp.begin(), temp.begin() + k + s1.length()+1);
+						k = temp.find(" ");
+						mid = temp.substr(0, k);
+						temp.erase(temp.begin(), temp.begin() + k + 1);
+						k = temp.find(" ");
+						s = temp.substr(0, k);
+						filterword(s);
+						if (s.compare(s2) == 0)
+						{
+							ori += s1;
+							ori += " ";
+							ori += mid;
+							ori += " ";
+							ori += s2;
+							rank[m].filename = i;
+							rank[m].times++;
+							rank[m].loc = pcur1->loc[j];
+							m++;
+							sup = ori;
+							ori.clear();
+							temp.clear();
+							s.clear();
+							break;
+						}
 				}
+
+			}
+
+
+		}
+
+	}
+	if (m == 0) {
+		cout << "FUCK!";
+		return;
+	}
+
+	int i, j;
+	bool swapped;
+	for (i = 0; i < m; i++)
+	{
+		swapped = false;
+		for (j = 0; j < m - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
 			}
 		}
+
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
 	}
+	int t = 0;
+	while (rank[t].times != 0 && t<5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[t].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[t].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		printparawhole(a[rank[t].filename].para[rank[t].loc], sup);
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		t++;
+	}
+}
+void printplaceholder(string para, string s1, string s2, string s)
+{
+	string stuff, fil;
+	int k = 0;
+	while (k != -1)
+	{
+		k = para.find(' ');
+		// find the location of ' '
+		stuff = para.substr(0, k); //copy the substring from start to location of ' '
+		fil = stuff;
+		filterword(fil);
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		if (fil == s1 || fil == s2 || fil == s)
+		{
+			HANDLE hConsoleColor;
+			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsoleColor, 4);
+			cout << stuff;
+		}
+		else
+			cout << stuff;
+		if (k != -1)
+		{
+			para.erase(para.begin(), para.begin() + k + 1); // delete the string from start to location of ' '+1
+		}
+		cout << " ";
+		fil.clear();
+	}
+}
+//----------------------------------------------ULTIMATE----------------------------------------
+void swap(RankSys *&xp, RankSys *&yp)
+{
+	RankSys *temp = xp;
+	xp = yp;
+	yp = temp;
+}
+int count(string s, char sub)
+{
+	int count = 0;
+	for (int i = 0; i < s.length(); i++)
+	{
+		if (s[i] == sub)
+		{
+			++count;
+		}
+	}
+	return count;
+}
+//Search one word
+void rankingone(News a[], int numfile, string key)
+{
+	clock_t begin = clock();
+	RankSys *rank = new RankSys[numfile];
+	int count=0;
+	int fuck = 0;
+	/*bool checkintree = false;
+	if (isSub(a, " ")) {
+		int  n = count(a, ' ') + 1;
+		int k = 0, i = 0;
+		string *block = new string[n];
+		TrieNode *pcur[50];
+			while (k != -1)
+			{
+				k = a.find(' ');
+				block[i] = a.substr(0, k); 
+				if (k != -1)
+					a.erase(a.begin(), a.begin() + k + 1);
+				i++;
+			}
+		for (int j = 0; j < n; j++)
+		{
+			search(root, block[j], checkintree, pcur[j]);
+			if (checkintree == false) {
+				for (int l = j; l < n-1; l++)
+					block[j] = block[j + 1];
+					pcur[j] = pcur[j + 1];
+			}//if not in trie
+			n--;
+		}*/
+	bool checkintree = false;
+	TrieNode *pcur = getNode();
+	for (int i = 0; i < numfile; i++)
+	{
+		search(a[i].root, key, checkintree, pcur);
+		if (checkintree == true && pcur->isEndOfWord)
+		{
+			rank[i].times = pcur->count;
+			rank[i].filename = i;
+			rank[i].loc = pcur->loc[0];
+			count++;
+		}
+		else {
+			rank[i].times = 0;
+			fuck++;
+			}
+	}
+	if (fuck == numfile) {
+		cout << "FUCK!";
+		return;
+	}
+	int i, j;
+	bool swapped;
+	for (i = 0; i < count; i++)
+	{
+		swapped = false;
+		for (j = 0; j < count - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
+			}
+		}
+
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
+	}
+	int k = 0;
+	while (rank[k].times !=0 && k<5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[k].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[k].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		printpara(a[rank[k].filename].para[rank[k].loc], key);
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		k++;
+	}
+	clock_t end = clock();
+	cout << "Time run: " << (float)(end - begin) / CLOCKS_PER_SEC << " s" << endl;
+} //Search one word
+//Ranking AND
+void rankingtwo(News a[], int numfile, string s1, string s2) {
+
+	RankSys *rank = new RankSys[numfile];
+	int fuck = 0, count = 0;
+	bool a1 = false, a2 = false;
+	bool check = false;
+	TrieNode *pcur1 = getNode();
+	TrieNode *pcur2 = getNode();
+	for (int i = 0; i < numfile; i++)
+	{
+		int m = 0, n = 0;
+		search(a[i].root, s1, a1, pcur1);
+		search(a[i].root, s2, a2, pcur2);
+		while (m < pcur1->count && n < pcur2->count)
+		{
+			if (pcur1->loc[m] < pcur2->loc[n])
+				m++;
+			else if (pcur2->loc[n] < pcur1->loc[m])
+				n++;
+			else if  ( pcur1->loc[m] == pcur2->loc[n])
+			{
+				check = true;
+				break;
+			}
+			check = false;
+		}
+		if (a1 == true && pcur1->isEndOfWord && a2 == true && pcur2->isEndOfWord && check == true)
+		{
+			rank[i].times = pcur1->count + pcur2->count;
+			rank[i].filename = i;
+			rank[i].loc = pcur1->loc[m];
+			count++;
+		
+		}
+		else {
+			rank[i].times = 0;
+			fuck++;
+		}
+}
+	if (fuck == numfile) {
+		cout << "FUCK!";
+		return;
+	}
+	int i, j;
+	bool swapped;
+	for (i = 0; i < count; i++)
+	{
+		swapped = false;
+		for (j = 0; j < count - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
+			}
+		}
+
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
+	}
+	int k = 0;
+	while (rank[k].times != 0 && k<5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[k].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[k].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		printparatwo(a[rank[k].filename].para[rank[k].loc], s1,s2);
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		k++;
+	}
+}
+//Ranking OR
+void rankingor(News a[], int numfile, string s1, string s2)
+{
+	RankSys *rank = new RankSys[numfile];
+	int fuck = 0, count = 0;
+	bool a1 = false, a2 = false;
+	bool check = false;
+	TrieNode *pcur1 = getNode();
+	TrieNode *pcur2 = getNode();
+	for (int i = 0; i < numfile; i++)
+	{
+		search(a[i].root, s1, a1, pcur1);
+		search(a[i].root, s2, a2, pcur2);
+
+		if (a1 == true && pcur1->isEndOfWord && pcur1->count > pcur2->count)
+		{
+
+			rank[i].times = pcur1->count;
+			rank[i].filename = i;
+			rank[i].loc = pcur1->loc[0];
+			rank[i].ofpcur = 1;
+			count++;
+		}
+		else if (a2 == true && pcur2->isEndOfWord && pcur2->count >= pcur1->count)
+		{
+			rank[i].times = pcur2->count;
+			rank[i].filename = i;
+			rank[i].loc = pcur2->loc[0];
+			rank[i].ofpcur = 2;
+			count++;
+		}
+		else {
+			rank[i].times = 0;
+			fuck++;
+		}
+	}
+	if (fuck == numfile) {
+		cout << "FUCK!";
+		return;
+	}
+	int i, j;
+	bool swapped;
+	for (i = 0; i < count; i++)
+	{
+		swapped = false;
+		for (j = 0; j < count - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
+			}
+		}
+
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
+	}
+	int k = 0;
+	while (rank[k].times != 0 && k<5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[k].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[k].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		if (rank[k].ofpcur == 1)
+		printpara(a[rank[k].filename].para[rank[k].loc], s1);
+		else if (rank[k].ofpcur == 2)
+		printpara(a[rank[k].filename].para[rank[k].loc], s2);
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		k++;
+	}
+}
+//Ranking Whole
+void rankingwhole(News a[], int numfile, string s) {
+	RankSys *rank = new RankSys[numfile];
+	int m = 0;
+	int l = 1;
+	for (int i = 0; i < numfile; i++)
+	{
+		while (!a[i].para[l].empty())
+		{
+			if (a[i].para[l].find(s) != -1) {
+				rank[m].filename = i;
+				rank[m].times++;
+				rank[m].loc = l;
+				m++;
+			}
+			l++;
+		}
+		l = 1;
+	}
+	if (m == 0) {
+		cout << "FUCK!";
+		return;
+	}
+
+	int i, j;
+	bool swapped;
+	for (i = 0; i < m; i++)
+	{
+		swapped = false;
+		for (j = 0; j < m - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
+			}
+		}
+
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
+	}
+	int k = 0;
+	while (rank[k].times != 0 && k<5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[k].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[k].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		printparawhole(a[rank[k].filename].para[rank[k].loc], s);
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		k++;
+	}
+}
+void printpara(string para, string s) {
+	string stuff, fil;
+	int k = 0;
+	while (k != -1)
+	{	
+		k = para.find(' ');
+		// find the location of ' '
+		stuff = para.substr(0, k); //copy the substring from start to location of ' '
+		fil = stuff;
+		filterword(fil);
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		if (fil == s)
+		{
+			HANDLE hConsoleColor;
+			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsoleColor, 4);
+				cout << stuff;
+		}
+		else 
+		cout << stuff;
+		if (k != -1)
+		{
+			para.erase(para.begin(), para.begin() + k + 1); // delete the string from start to location of ' '+1
+		}
+		cout << " ";
+		fil.clear();
+	}
+}
+void printparatwo(string para, string s1, string s2) {
+	string stuff, fil;
+	int k = 0;
+	while (k != -1)
+	{
+		k = para.find(' ');
+		// find the location of ' '
+		stuff = para.substr(0, k); //copy the substring from start to location of ' '
+		fil = stuff;
+		filterword(fil);
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		if (fil == s1 || fil == s2)
+		{
+			HANDLE hConsoleColor;
+			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsoleColor, 4);
+			cout << stuff;
+		}
+		else
+			cout << stuff;
+		if (k != -1)
+		{
+			para.erase(para.begin(), para.begin() + k + 1); // delete the string from start to location of ' '+1
+		}
+		cout << " ";
+		fil.clear();
+	}
+}
+void printparawhole(string para, string s) {
+	string stuff, fil;
+	int k = 0;
+		k = para.find(s);
+		// find the location of ' '
+		if (k == 0)
+		{
+			HANDLE hConsoleColor;
+			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsoleColor, 4);
+			cout << s;
+			para.erase(para.begin(),para.begin() + s.length());
+			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsoleColor, 7);
+			cout << para;
+			return;
+		}
+		stuff = para.substr(0, k); //copy the substring from start to location of ' '
+		cout << stuff;
+		cout << " ";
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << s;
+		cout << " ";
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		fil = para.substr(k + 1 + s.length());
+		cout << fil;
+		fil.clear();
+		stuff.clear();
 }

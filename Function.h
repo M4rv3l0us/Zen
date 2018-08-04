@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <ctime>
+#include <windows.h>
 using namespace std;
 struct TrieNode
 {
@@ -23,18 +24,23 @@ struct News
 	string para[100];
 	TrieNode *root;
 };
+struct RankSys {
+	int filename;
+	int times = 0;
+	int loc;
+	int ofpcur;
+};
 TrieNode *getNode(void);
-void createNews(News a[100]);
+void createNews(News a[], int numfile);
 //void newcreateNews(News a[100]);
 //TRIENODE
 void insert(struct TrieNode *root, string key, int loc, string filename);
-//void newinsert(struct TrieNode *root, string key, string filename, int loc[]);
 void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur);
 bool isStop(TrieNode *sroot, string s);
 TrieNode stopwords(TrieNode *sroot);
 void filterword(string &s);
 bool isSub(string s1, string s2);
-void input(TrieNode *root, string para[], string filename);
+void input(TrieNode *root, string *para, string filename);
 //void inputpara(TrieNode*root, string para[], string filename);
 //OUTPUT,OPTIMIZE
 bool isLeafNode(struct TrieNode* root);
@@ -50,11 +56,24 @@ void inputhistoryTrie(TrieNode *hroot);
 //SEARCHING
 void xoa(int a[], int&n);
 void searchInfile(News a[], string key);
-void AND(string searchword, News a[]);
-void OR(string searchword, News a[]);
-void placeholder(string searchword, News a[]);
+void AND(string searchword,int numfile, News a[]);
+void OR(string searchword,int numfile, News a[]);
+void WHOLE(string searchword,int numfile, News a[]);
+void placeholder(string searchword,int numfile, News a[]);
+void printplaceholder(string para, string s1, string s2, string s);
 void intitle(string searchword, News a[]);
 void exactmatch(string searchword, News a[]);
-
-
+//-----------------------------------------------ULTIMATE--------------------------------------------
+void splitblock(string s, string *&block, int &numblock);
+void searchblock(News a[], int numfile, string block[], int numblock);
+void printblock(string para, string block[], int numblock);
+int count(string s, char sub);
+void swap(RankSys *&xp, RankSys *&yp);
+void rankingone(News a[], int numfile, string key);
+void rankingtwo(News a[],int numfile, string s1, string s2);
+void rankingor(News a[],int numfile, string s1, string s2);
+void rankingwhole(News a[],int numfile, string s);
+void printpara(string para, string s);
+void printparatwo(string para, string s1, string s2);
+void printparawhole(string para, string s);
 #endif // !_FUNCTION_H_
