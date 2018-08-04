@@ -6,8 +6,8 @@ int main()
 	string a;
 	int query;
 	// Construct trie
-	News b[101];
-	int n = 101;
+	News b[100];
+	int n = 100;
 	createNews(b,n);
 	cout << "Pls enter the word you want to search: " << endl;
 	getline(cin, a);
@@ -20,6 +20,7 @@ int main()
 	updatehistoryTrie(hroot, a);
 	SYN(a, n, b);
 	SINGLE(a, n, b);
+	INTITLE(a, n, b);
 	MINUS(a, n, b);
 	placeholder(a,n, b);
 	WHOLE(a,n, b);

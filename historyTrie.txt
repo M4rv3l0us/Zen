@@ -35,6 +35,10 @@ iaandayou,historyTrie.txt,1
 iaorat,historyTrie.txt,1
 iaorayou,historyTrie.txt,1
 inaoraout,historyTrie.txt,1
+intitleafter,historyTrie.txt,1
+intitleafteralosing,historyTrie.txt,1
+intitleamazon,historyTrie.txt,1
+intitleto,historyTrie.txt,1
 l,historyTrie.txt,1
 leaf,historyTrie.txt,1
 let,historyTrie.txt,1

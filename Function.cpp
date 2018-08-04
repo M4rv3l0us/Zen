@@ -506,6 +506,7 @@ void printblock(string para, string block[], int numblock)
 }
 void SINGLE(string a, int n, News b[])
 {
+	filterword(a);
 	if (a.find(" ") == -1 && a.find("AND") == -1 && a.find("-") == -1 && a.find("OR") == -1 && a.find("`") == -1 && a.find("*") == -1)
 		rankingone(b, n, a);
 }
@@ -694,36 +695,16 @@ void placeholder(string searchword, int numfile, News a[])
 		t++;
 	}
 }
-void printplaceholder(string para, string s1, string s2, string s)
+void INTITLE(string searchword,int numfile, News a[])
 {
-	string stuff, fil;
-	int k = 0;
-	while (k != -1)
+	string s;
+	if (searchword.find("intitle:") == 0)
 	{
-		k = para.find(' ');
-		// find the location of ' '
-		stuff = para.substr(0, k); //copy the substring from start to location of ' '
-		fil = stuff;
-		filterword(fil);
-		HANDLE hConsoleColor;
-		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(hConsoleColor, 7);
-		if (fil == s1 || fil == s2 || fil == s)
-		{
-			HANDLE hConsoleColor;
-			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
-			SetConsoleTextAttribute(hConsoleColor, 4);
-			cout << stuff;
-		}
-		else
-			cout << stuff;
-		if (k != -1)
-		{
-			para.erase(para.begin(), para.begin() + k + 1); // delete the string from start to location of ' '+1
-		}
-		cout << " ";
-		fil.clear();
+		s = searchword.substr(8);
+	
 	}
+	else return;
+	rankingtitle(a, numfile, s);
 }
 //----------------------------------------------ULTIMATE----------------------------------------
 void swap(RankSys *&xp, RankSys *&yp)
@@ -1129,7 +1110,71 @@ void rankingminus(News a[], int numfile, string s1, string s2) {
 		k++;
 	}
 }
+//Ranking Title
+void rankingtitle(News a[], int numfile, string key)
+{
+	RankSys *rank = new RankSys[numfile];
+	int count = 0;
+	int fuck = 0;
+	bool checkintree = false;
+	TrieNode *pcur = getNode();
+	for (int i = 0; i < numfile; i++)
+	{
+		search(a[i].root, key, checkintree, pcur);
+		if (checkintree == true && pcur->isEndOfWord && a[i].para[1].find(key) != -1)
+		{
+			rank[count].times = pcur->count;
+			rank[count].filename = i;
+			rank[count].loc = pcur->loc[0];
+			count++;
+		}
+		else {
+			rank[count].times = 0;
+			fuck++;
+		}
+	}
+	if (fuck == numfile) {
+		cout << "FUCK!";
+		return;
+	}
+	int i, j;
+	bool swapped;
+	for (i = 0; i < count; i++)
+	{
+		swapped = false;
+		for (j = 0; j < count - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
+			}
+		}
 
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
+	}
+	int k = 0;
+	while (rank[k].times != 0 && k < 5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[k].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[k].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		printpara(a[rank[k].filename].para[rank[k].loc], key);
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		k++;
+	}
+}
 //PRINT
 void printpara(string para, string s) {
 	string stuff, fil;

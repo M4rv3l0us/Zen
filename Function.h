@@ -64,8 +64,7 @@ void OR(string searchword,int numfile, News a[]);
 void WHOLE(string searchword,int numfile, News a[]);
 void MINUS(string searchword, int numfile, News a[]);
 void placeholder(string searchword,int numfile, News a[]);
-void printplaceholder(string para, string s1, string s2, string s);
-void intitle(string searchword, News a[]);
+void INTITLE(string searchword, int numfile, News a[]);
 void exactmatch(string searchword, News a[]);
 //-----------------------------------------------ULTIMATE--------------------------------------------
 void splitblock(string s, string *&block, int &numblock);
@@ -78,6 +77,7 @@ void rankingtwo(News a[],int numfile, string s1, string s2);
 void rankingor(News a[],int numfile, string s1, string s2);
 void rankingwhole(News a[],int numfile, string s); 
 void rankingminus(News a[], int numfile, string s1, string s2);
+void rankingtitle(News a[], int numfile, string key);
 void printpara(string para, string s);
 void printparatwo(string para, string s1, string s2);
 void printparawhole(string para, string s);
