@@ -84,21 +84,6 @@ void search(TrieNode *&root, string &key, bool &checkintree, TrieNode *&pcur) //
 		return;
 	}
 }
-bool checkintree(TrieNode *&root, string key)
-{
-	struct TrieNode *pCrawl = root;
-	int index = 0;
-	for (int i = 0; i < key.length(); i++)
-	{
-		index = findex(key[i]);
-
-		if (!pCrawl->children[index])
-			return false;
-		pCrawl = pCrawl->children[index];
-	}
-	if (pCrawl->isEndOfWord)
-		return true;
-}
 TrieNode stopwords(TrieNode *sroot) //stopwords filter
 {
 	ifstream fin;
@@ -154,6 +139,7 @@ void input(TrieNode *root, string *para, string filename) //Nhap tat ca words tr
 	string s, stuff;
 	TrieNode *sroot = getNode();
 	*sroot = stopwords(sroot);
+	TrieNode *synroot = getNode();
 	int j = 1, k = 0;
 	int loc;
 	while (fin.good()) {
@@ -175,7 +161,9 @@ void input(TrieNode *root, string *para, string filename) //Nhap tat ca words tr
 				s.erase(s.begin(), s.begin() + k + 1); // delete the string from start to location of ' '+1
 			}
 			if (stuff != " ")
+			{
 				insert(root, stuff, loc, filename); // checkstop and insert
+			}
 			stuff.clear(); // clear stuff
 		}
 	}
@@ -264,6 +252,16 @@ int level = 0;
 hroot->isEndOfWord = false;
 display(fout, hroot, word, level);
 fout.close();
+}
+void outputsyn(TrieNode *sroot) {
+	ofstream fout;
+	fout.open("synTrie.txt");
+	string t;
+	char word[20];
+	int level = 0;
+	sroot->isEndOfWord = false;
+	display(fout, sroot, word, level);
+	fout.close();
 }
 
 
@@ -1129,4 +1127,166 @@ void printparawhole(string para, string s) {
 		cout << fil;
 		fil.clear();
 		stuff.clear();
+}
+//Synonym
+void SYN(string searchword, int numfile, News a[])
+{
+	TrieNode *pcur = getNode();
+	string s;
+	
+	if (searchword[0] == '~')
+	{
+		s = searchword.substr(searchword.find('~') + 1);
+	}
+	rankingsyn(a, numfile, s);
+}
+void inputsyntrie(TrieNode *&sroot)
+{
+	sroot = getNode();
+	ifstream fin;
+	string gr;
+	fin.open("synonym.txt");
+	while (fin.good())
+	{
+		getline(fin, gr, '\n');
+		int k = gr.find('-');
+		string group = gr.substr(0, k);
+		filterword(group);
+		gr.erase(gr.begin(), gr.begin() + k + 1);
+		string *syno = new string[100];
+		int i = 1;
+		syno[0] = group;
+		while (!gr.empty())
+		{
+			k = gr.find(',');
+			string syn = gr.substr(0, k);
+			syno[i] = syn;
+			i++;
+			if (k == -1) break;
+			gr.erase(gr.begin(), gr.begin() + k + 1);
+		}
+		for (int j = 0; j < i; j++)
+		{
+			insertsyntrie(sroot, syno[j], syno);
+		}
+	}
+}
+void insertsyntrie(TrieNode *&sroot, string key, string *syn)
+{
+	struct TrieNode *pCrawl = sroot;
+	int index = 0;
+	for (int i = 0; i < key.length(); i++)
+	{
+		index = findex(key[i]);
+		// The TrieNode looks like: a b c d e f g h j k l m n o p q r s t u v w x y z # $ 0 1 2 3 4 5 6 7 8 9 
+		if (!pCrawl->children[index])
+
+			pCrawl->children[index] = getNode();
+
+		pCrawl = pCrawl->children[index];
+	}
+	// mark last node as leaf
+	//pCrawl->syn->group = group;
+	pCrawl->syn = syn;
+	pCrawl->isEndOfWord = true;
+}
+void checkinsyntree(TrieNode *&root, string key,bool&check, string *&syn)
+{
+	struct TrieNode *pCrawl = root;
+	int index = 0;
+	for (int i = 0; i < key.length(); i++)
+	{
+		index = findex(key[i]);
+
+		if (!pCrawl->children[index])
+			check = false;
+		pCrawl = pCrawl->children[index];
+	}
+	if (pCrawl->isEndOfWord)
+	{
+		check = true;
+		syn = pCrawl->syn;
+	}
+}
+void rankingsyn(News a[], int numfile, string s)
+{
+	TrieNode *sroot = getNode();
+	TrieNode *pcur = getNode();
+	RankSys *rank = new RankSys[1000];
+	int count = 0, fuck = 0, l = 1, m = 0;
+	inputsyntrie(sroot);
+	bool check = false;
+	string *syn = 0;
+	checkinsyntree(sroot, s,check,syn);
+	if (check == false)
+	{
+		cout << "No Synonym found!" << endl;
+		return;
+	}
+	else
+	{
+		for (int i = 0; i < numfile; i++)
+		{
+			while (!syn[l].empty())
+			{
+				search(a[i].root, syn[l], check, pcur);
+				if (check == true && pcur->isEndOfWord)
+				{
+					rank[count].times = pcur->count;
+					rank[count].filename = i;
+					rank[count].loc = pcur->loc[0];
+					rank[count].s = syn[l];
+					count++;
+				}
+				else {
+					rank[count].times = 0;
+					fuck++;
+				}
+				l++;
+			}
+			l = 1;
+		}
+		if (fuck == numfile) {
+			cout << "FUCK!";
+			return;
+		}
+		int i, j;
+		bool swapped;
+		for (i = 0; i < count; i++)
+		{
+			swapped = false;
+			for (j = 0; j < count - i; j++)
+			{
+				if (rank[j].times < rank[j + 1].times)
+				{
+					swap(rank[j], rank[j + 1]);
+					swapped = true;
+				}
+			}
+
+			// IF no two elements were swapped by inner loop, then break
+			if (swapped == false)
+				break;
+		}
+		int k = 0;
+		while (rank[k].times != 0 && k<5)
+		{
+			HANDLE hConsoleColor;
+			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsoleColor, 4);
+			cout << a[rank[k].filename].filename << endl;
+			SetConsoleTextAttribute(hConsoleColor, 7);
+			cout << "Times: " << rank[k].times << endl;
+			SetConsoleTextAttribute(hConsoleColor, 7);
+			cout << "In para: " << endl;
+			printpara(a[rank[k].filename].para[rank[k].loc], rank[k].s);
+			cout << endl;
+			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsoleColor, 2);
+			cout << "/////////////////////////////////////////////////////////" << endl;
+			SetConsoleTextAttribute(hConsoleColor, 7);
+			k++;
+		}
+	}
+
 }

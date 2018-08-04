@@ -18,6 +18,7 @@ int main()
 		searchblock(b, block, n);
 	}*/
 	updatehistoryTrie(hroot, a);
+	SYN(a, n, b);
 	if (a.find(" ") == -1)
 		rankingone(b, n, a);
 	placeholder(a,n, b);

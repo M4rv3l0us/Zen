@@ -24,6 +24,7 @@ baoraa,historyTrie.txt,1
 boycottsaover,historyTrie.txt,1
 children,historyTrie.txt,1
 cocc,historyTrie.txt,1
+come,historyTrie.txt,1
 hope,historyTrie.txt,1
 humble,historyTrie.txt,1
 iaandayou,historyTrie.txt,1
@@ -37,7 +38,7 @@ linear,historyTrie.txt,1
 link,historyTrie.txt,1
 looking,historyTrie.txt,1
 losing,historyTrie.txt,1
-losingafight,historyTrie.txt,2
+losingafight,historyTrie.txt,1
 love,historyTrie.txt,1
 p,historyTrie.txt,1
 people,historyTrie.txt,1
@@ -48,7 +49,9 @@ porn,historyTrie.txt,1
 pp,historyTrie.txt,1
 release,historyTrie.txt,1
 samsung,historyTrie.txt,1
-some,historyTrie.txt,1
+set,historyTrie.txt,1
+some,historyTrie.txt,2
+sroot,historyTrie.txt,1
 t,historyTrie.txt,1
 the,historyTrie.txt,1
 theaandaa,historyTrie.txt,1

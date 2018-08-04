@@ -16,6 +16,7 @@ struct TrieNode
 	string filename;
 	int count = 1;
 	int loc[50];
+	string *syn;
 	// loc={1,2,3} para 1, para 2, para 3
 };
 struct News
@@ -29,6 +30,7 @@ struct RankSys {
 	int times = 0;
 	int loc;
 	int ofpcur;
+	string s;
 };
 TrieNode *getNode(void);
 void createNews(News a[], int numfile);
@@ -76,4 +78,12 @@ void rankingwhole(News a[],int numfile, string s);
 void printpara(string para, string s);
 void printparatwo(string para, string s1, string s2);
 void printparawhole(string para, string s);
+//Synonym
+void SYN(string searchword, int numfile, News a[]);
+void rankingsyn(News a[], int numfile, string s);
+void inputsyntrie(TrieNode *&sroot);
+void insertsyntrie(TrieNode *&sroot, string key, string *syn);
+void checkinsyntree(TrieNode *&root, string key, bool&check, string *&syn);
+void outputsyn(TrieNode *sroot);
+
 #endif // !_FUNCTION_H_
