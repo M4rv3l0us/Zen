@@ -16,8 +16,10 @@ int findex(int level)
 		index = level - '0' + 28;  //index of number 0->9
 	return index;
 }
-void createNews(News a[], int numfile) {
+void createNews(News a[], int numfile, number *&nroot) {
 	clock_t begin = clock();
+	nroot = NULL;
+	number *cur = nroot;
 	string newsName = "Group22News", s;
 	for (int i = 0; i < numfile ;i++)
 	{
@@ -27,7 +29,7 @@ void createNews(News a[], int numfile) {
 		newsName += s; // create News' name, e.g Group22News01.txt
 		a[i].filename = newsName;
 		a[i].root = getNode(); // create new node
-		input(a[i].root, a[i].para, newsName); //input root, para and name of a News into database
+		input(a[i].root, a[i].para, newsName,nroot,cur);
 		newsName = "Group22News";
 	}
 	clock_t end = clock();
@@ -132,7 +134,7 @@ bool isSub(string s1, string s2)
 	}
 	else return false;
 } //check string 
-void input(TrieNode *root, string *para, string filename) //Nhap tat ca words trong 1 News vao 1 Trie
+void input(TrieNode *root, string *para, string filename,number *&nroot, number *&cur) //Nhap tat ca words trong 1 News vao 1 Trie
 {
 	ifstream fin;
 	fin.open(filename);
@@ -162,6 +164,7 @@ void input(TrieNode *root, string *para, string filename) //Nhap tat ca words tr
 			}
 			if (stuff != " ")
 			{
+				insertnumber(nroot, stuff,cur);
 				insert(root, stuff, loc, filename); // checkstop and insert
 			}
 			stuff.clear(); // clear stuff
@@ -261,6 +264,16 @@ void outputsyn(TrieNode *sroot) {
 	int level = 0;
 	sroot->isEndOfWord = false;
 	display(fout, sroot, word, level);
+	fout.close();
+}
+void outputnum(TrieNode *nroot) {
+	ofstream fout;
+	fout.open("numTrie.txt");
+	string t;
+	char word[20];
+	int level = 0;
+	nroot->isEndOfWord = false;
+	display(fout, nroot, word, level);
 	fout.close();
 }
 
@@ -714,6 +727,17 @@ void INTITLE(string searchword,int numfile, News a[])
 	else return;
 	rankingtitle(a, numfile, s);
 }
+//5. filename:.txt
+void TXT(string searchword, int numfile, News a[]) {
+	string s;
+	if (searchword.find("filename:") == 0)
+	{
+		s = searchword.substr(9);
+
+	}
+	else return;
+	rankingone(a, numfile, s);
+}
 //----------------------------------------------ULTIMATE----------------------------------------
 void swap(RankSys *&xp, RankSys *&yp)
 {
@@ -765,10 +789,10 @@ void rankingone(News a[], int numfile, string key)
 	}
 	int i, j;
 	bool swapped;
-	for (i = 0; i < count; i++)
+	for (i = 0; i < count+1; i++)
 	{
 		swapped = false;
-		for (j = 0; j < count - i; j++)
+		for (j = 0; j < count+1 - i; j++)
 		{
 			if (rank[j].times < rank[j + 1].times)
 			{
@@ -1174,6 +1198,7 @@ void rankingtitle(News a[], int numfile, string key)
 		k++;
 	}
 }
+
 //PRINT
 void printpara(string para, string s) {
 	string stuff, fil;
@@ -1433,6 +1458,152 @@ void rankingsyn(News a[], int numfile, string s)
 			SetConsoleTextAttribute(hConsoleColor, 7);
 			k++;
 		}
+	}
+
+}
+// NUMBERLAND
+
+void insertnumber(number * &nroot, string key, number *&cur)
+{
+	filterword(key);
+	if (key.empty()) return;
+	for (int i = 0; i < key.length(); i++)
+	{
+		if (key[i] > 47 && key[i] < 58)
+			continue;
+		else return;
+	}
+	if (nroot == NULL)
+	{
+		nroot = new number;
+		nroot->data = key;
+		nroot->next = NULL;
+		cur = nroot;
+	}
+	else
+	{
+		cur->next = new number;
+		cur = cur->next;
+		cur->data = key;
+		cur->next = NULL;
+	}
+}
+
+void NUM(string searchword, News a[],int numfile, number *&nroot)
+{
+	number *pcur = nroot;
+	
+	bool a1 = false, a2 = false;
+	string s1, s2;
+	if (searchword.find('..') == -1)
+	{
+		return;
+	}
+	else
+	{
+		s1 = searchword.substr(0, searchword.find('..'));
+		s2 = searchword.substr(searchword.find('..') + 2);
+	}
+	rankingnum(a, numfile, s1, s2, nroot);
+}
+void rankingnum(News a[], int numfile, string s1, string s2, number *&nroot)
+{
+	RankSys *rank = new RankSys[numfile];
+	int fuck = 0, count = 0;
+	bool check = false;
+	TrieNode *pcur = getNode();
+	number * newnum = NULL, *curn = newnum;
+	number *cur = nroot;
+	int ns1 = stoi(s1, 0, 10);
+	int ns2 = stoi(s2, 0, 10);
+	while (cur != NULL)
+	{
+
+		int ns = stoi(cur->data, 0, 10);
+		if (ns > ns1 && ns < ns2)
+		{
+			if (newnum == NULL)
+			{
+				newnum = new number;
+				newnum->data = cur->data;
+				newnum->next = NULL;
+				curn = newnum;
+			}
+			else
+			{
+				curn->next = new number;
+				curn = curn->next;
+				curn->data = cur->data;
+				curn->next = NULL;
+			}
+		}
+		cur = cur->next;
+	}
+	for (int i = 0; i < numfile; i++)
+	{
+		number * cur1 = newnum;
+		while (cur1 != NULL)
+		{
+			search(a[i].root, cur1->data, check, pcur);
+			if (check == true && pcur->isEndOfWord)
+			{
+				rank[count].times = pcur->count;
+				rank[count].filename = i;
+				rank[count].s = cur1->data;
+				rank[count].loc = pcur->loc[0];
+				count++;
+			}
+			else {
+				rank[count].times = 0;
+				fuck++;
+
+			}
+			cur1 = cur1->next;
+		}
+	}
+	if (fuck == numfile) {
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << "No match found!" << endl;
+		return;
+	}
+	int i, j;
+	bool swapped;
+	for (i = 0; i < count + 1; i++)
+	{
+		swapped = false;
+		for (j = 0; j < count + 1 - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
+			}
+		}
+
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
+	}
+	int k = 0;
+	while (rank[k].times != 0 && k<5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[k].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[k].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		printpara(a[rank[k].filename].para[rank[k].loc],rank[k].s );
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		k++;
 	}
 
 }

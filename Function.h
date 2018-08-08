@@ -6,6 +6,10 @@
 #include <ctime>
 #include <windows.h>
 using namespace std;
+struct number {
+	string data;
+	number *next;
+};
 struct TrieNode
 {
 	TrieNode *children[38];
@@ -33,7 +37,7 @@ struct RankSys {
 	string s;
 };
 TrieNode *getNode(void);
-void createNews(News a[], int numfile);
+void createNews(News a[], int numfile, number *&nroot);
 //void newcreateNews(News a[100]);
 //TRIENODE
 void insert(struct TrieNode *root, string key, int loc, string filename);
@@ -42,7 +46,7 @@ bool isStop(TrieNode *sroot, string s);
 TrieNode stopwords(TrieNode *sroot);
 void filterword(string &s);
 bool isSub(string s1, string s2);
-void input(TrieNode *root, string *para, string filename);
+void input(TrieNode *root, string *para, string filename, number *&nroot, number *&cur);
 //void inputpara(TrieNode*root, string para[], string filename);
 //OUTPUT,OPTIMIZE
 bool isLeafNode(struct TrieNode* root);
@@ -65,6 +69,7 @@ void WHOLE(string searchword,int numfile, News a[]);
 void MINUS(string searchword, int numfile, News a[]);
 void PLACEHOLDER(string searchword,int numfile, News a[]);
 void INTITLE(string searchword, int numfile, News a[]);
+void TXT(string searchword, int numfile, News a[]);
 void exactmatch(string searchword, News a[]);
 //-----------------------------------------------ULTIMATE--------------------------------------------
 void splitblock(string s, string *&block, int &numblock);
@@ -88,5 +93,8 @@ void inputsyntrie(TrieNode *&sroot);
 void insertsyntrie(TrieNode *&sroot, string key, string *syn);
 void checkinsyntree(TrieNode *&root, string key, bool&check, string *&syn);
 void outputsyn(TrieNode *sroot);
-
+//NUMBERLAND
+void insertnumber(number * &nroot, string key, number *&cur);
+void rankingnum(News a[], int numfile, string s1, string s2, number *&nroot);
+void NUM(string searchword, News a[], int numfile, number *&nroot);
 #endif // !_FUNCTION_H_
