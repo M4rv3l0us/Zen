@@ -70,7 +70,7 @@ void MINUS(string searchword, int numfile, News a[]);
 void PLACEHOLDER(string searchword,int numfile, News a[]);
 void INTITLE(string searchword, int numfile, News a[]);
 void TXT(string searchword, int numfile, News a[]);
-void exactmatch(string searchword, News a[]);
+void SUPERAND(string searchword, int numfile, News a[]);
 //-----------------------------------------------ULTIMATE--------------------------------------------
 void splitblock(string s, string *&block, int &numblock);
 void searchblock(News a[], int numfile, string block[], int numblock);
@@ -79,6 +79,7 @@ int count(string s, char sub);
 void swap(RankSys *&xp, RankSys *&yp);
 void rankingone(News a[], int numfile, string key);
 void rankingtwo(News a[],int numfile, string s1, string s2);
+void rankingthree(News a[], int numfile, string s1, string s2);
 void rankingor(News a[],int numfile, string s1, string s2);
 void rankingwhole(News a[],int numfile, string s); 
 void rankingminus(News a[], int numfile, string s1, string s2);

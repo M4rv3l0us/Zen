@@ -21,6 +21,7 @@ int main()
 		getline(cin, a);
 		updatehistoryTrie(hroot, a);
 		clock_t begin = clock();
+		SUPERAND(a, n, b);
 		SYN(a, n, b);
 		SINGLE(a, n, b);
 		INTITLE(a, n, b);

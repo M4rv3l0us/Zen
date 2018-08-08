@@ -738,6 +738,17 @@ void TXT(string searchword, int numfile, News a[]) {
 	else return;
 	rankingone(a, numfile, s);
 }
+void SUPERAND(string searchword, int numfile, News a[]) {
+	string s1,s2;
+	if (searchword.find('+and') != -1)
+	{
+		s1 = searchword.substr(0, searchword.find('+and') - 4);
+		s2 = searchword.substr(searchword.find('+and')+2);
+
+	}
+	else return;
+	rankingthree(a, numfile, s1, s2);
+}
 //----------------------------------------------ULTIMATE----------------------------------------
 void swap(RankSys *&xp, RankSys *&yp)
 {
@@ -1198,6 +1209,87 @@ void rankingtitle(News a[], int numfile, string key)
 		k++;
 	}
 }
+void rankingthree(News a[], int numfile, string s1, string s2) {
+	RankSys *rank = new RankSys[numfile];
+	int fuck = 0, count = 0;
+	bool a2 = false;
+	bool check = false;
+	TrieNode *pcur = getNode();
+	int m = 0, l = 1;
+		for (int i = 0; i < numfile; i++)
+		{
+			while (!a[i].para[l].empty())
+			{
+				if (a[i].para[l].find(s1) != -1) {
+					filterword(s2);
+					search(a[i].root, s2, a2, pcur);
+					for (int i = 0; i < pcur->count; i++) {
+						if (l == pcur->loc[i])
+						{
+							check = true;
+							break;
+						}
+						else check = false;
+					}
+					if (a2 == true && pcur->isEndOfWord && check == true)
+					{
+						rank[m].filename = i;
+						rank[m].times++;
+						rank[m].loc = l;
+						m++;
+					}
+				}
+				l++;
+			}
+			l = 1;
+		}
+	if (m == 0) {
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << "No match found!" << endl;
+		return;
+	}
+
+	int i, j;
+	bool swapped;
+	for (i = 0; i < m; i++)
+	{
+		swapped = false;
+		for (j = 0; j < m - i; j++)
+		{
+			if (rank[j].times < rank[j + 1].times)
+			{
+				swap(rank[j], rank[j + 1]);
+				swapped = true;
+			}
+		}
+
+		// IF no two elements were swapped by inner loop, then break
+		if (swapped == false)
+			break;
+	}
+	int k = 0;
+	while (rank[k].times != 0 && k<5)
+	{
+		HANDLE hConsoleColor;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 4);
+		cout << a[rank[k].filename].filename << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "Times: " << rank[k].times << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		cout << "In para: " << endl;
+		printparatwo(a[rank[k].filename].para[rank[k].loc], s1,s2);
+		cout << endl;
+		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hConsoleColor, 2);
+		cout << "/////////////////////////////////////////////////////////" << endl;
+		SetConsoleTextAttribute(hConsoleColor, 7);
+		k++;
+	}
+
+}
 
 //PRINT
 void printpara(string para, string s) {
@@ -1243,7 +1335,7 @@ void printparatwo(string para, string s1, string s2) {
 		HANDLE hConsoleColor;
 		hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(hConsoleColor, 7);
-		if (fil == s1 || fil == s2)
+		if (fil == s1 || fil == s2 || isSub(s1,fil))
 		{
 			HANDLE hConsoleColor;
 			hConsoleColor = GetStdHandle(STD_OUTPUT_HANDLE);

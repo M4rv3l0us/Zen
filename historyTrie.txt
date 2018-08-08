@@ -8,6 +8,10 @@ afteraandak,historyTrie.txt,1
 afteraandal,historyTrie.txt,1
 afteraandalosing,historyTrie.txt,1
 afteralosing,historyTrie.txt,1
+afteralosingaandaand,historyTrie.txt,1
+afteralosingaandafight,historyTrie.txt,2
+afteralosingaandapikachu,historyTrie.txt,1
+afteralosingaandayou,historyTrie.txt,1
 afteraoralosing,historyTrie.txt,1
 afterlosing,historyTrie.txt,1
 alaska,historyTrie.txt,1
@@ -21,7 +25,7 @@ amazonatax,historyTrie.txt,1
 amazonfacebook,historyTrie.txt,1
 and,historyTrie.txt,1
 aorahe,historyTrie.txt,1
-apple,historyTrie.txt,2
+apple,historyTrie.txt,1
 appleaandaamazon,historyTrie.txt,1
 appleaoraamazon,historyTrie.txt,1
 athe,historyTrie.txt,1
@@ -83,8 +87,11 @@ theaandaa,historyTrie.txt,1
 2,historyTrie.txt,1
 20,historyTrie.txt,1
 200,historyTrie.txt,1
+200250,historyTrie.txt,1
 200300,historyTrie.txt,1
+20100,historyTrie.txt,1
 25003500,historyTrie.txt,1
 250300,historyTrie.txt,1
+300400,historyTrie.txt,1
 40,historyTrie.txt,1
 42,historyTrie.txt,1
